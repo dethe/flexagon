@@ -1,0 +1,21 @@
+*{
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+.noprint{
+    display: none;
+}
+
+#c1{
+    float: left;
+}
+
+#c2{
+    float: right;
+}
+
+canvas{
+    page-break-after: always;
+}
