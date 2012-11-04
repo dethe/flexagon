@@ -12,7 +12,7 @@ Instructions: Clone the repo, add your own images with the same aspect ratio (2.
 
 For extra credit you can add an interface to load images from the web and crop them the the right aspect ratio, but I'm not going to get to that anytime soon.
 
-Load the file in Firefox and print double-sided, in landscape mode, flipping on the short edge. You may have to adjust the layout slightly depending how well your printer aligns the two sides. All the extra images will be hidden by a print stylesheet.
+Load the file in Firefox and print double-sided, in landscape mode, flipping on the short edge. You may have to adjust the layout slightly depending how well your printer aligns the two sides. If you want to see all the intermediate images, change they style tag type to 'print' and the extra images will be visible in the browser but still hidden when printing.
 
 Folding instructions are here: http://www.maths.uq.edu.au/~infinity/Infinity%2012/hexaflex.html You will have to glue the two strips into one longer strip first (hopefully it is clear where to glue).
 

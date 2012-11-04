@@ -84,9 +84,9 @@ function wedgeDown(src, offside){
         triangle(ctx, 0,0, size/2, fsize, size,0);
         ctx.clip();
     if (offside){
-        ctx.drawImage(src, size/2, dX, size, fsize, 0, 0, size, fsize);
-    }else{
         ctx.drawImage(src, 0, dX+fsize, size, fsize, 0, 0, size, fsize);
+    }else{
+        ctx.drawImage(src, size/2, dX, size, fsize, 0, 0, size, fsize);
     }
     return dest;
 }
@@ -127,6 +127,7 @@ function loadImage(idx){
             rotate(ctx0, -Math.PI/3 * 2);
             ctx0.drawImage(img, 0,0,img.width,img.height,dX,0,img_width,img_height);
             slices.push( wedgeUp(canvas0));
+            // if (false){
             if(idx > 2){
                 ctx0.save();
                 ctx0.clearRect(0,0,img_height,img_height);
