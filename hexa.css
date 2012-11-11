@@ -8,14 +8,18 @@
     display: none;
 }
 
-#c1{
+.front{
     float: left;
 }
 
-#c2{
+.back{
     float: right;
 }
 
-canvas{
+.c2{
     page-break-after: always;
+}
+
+canvas{
+    margin-bottom: 50px;
 }

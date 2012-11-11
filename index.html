@@ -3,11 +3,23 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Hexahexaflexgon Utility</title>
-    <link href="hexa.css" media="all" rel="stylesheet"/>
+    <!-- use media="print" to see intermediate images in the page -->
+    <style>
+    .noprint{
+        float: left;
+    }
+    .heximage{
+        clear: left;
+    }
+    </style>
+    <link href="hexa.css" media="print" rel="stylesheet"/>
 </head>
 <body>
-    <canvas id="c1" width="1" height="1" class="print"></canvas>
-    <canvas id="c2" width="1" height="1" class="print"></canvas>
+    <canvas id="c1" width="1" height="1" class="front print"></canvas>
+    <canvas id="c2" width="1" height="1" class="front print"></canvas>
+    <canvas id="c3" width="1" height="1" class="back"></canvas>
+    <canvas id="c4" width="1" height="1" class="back"></canvas>
+    <h3 class="noprint">Intermediate images:</h3>
     <script src="hexa.js"></script>
 </body>
 </html>

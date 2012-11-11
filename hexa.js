@@ -8,6 +8,10 @@ var canvas1 = document.getElementById('c1');
 var ctx1 = canvas1.getContext('2d');
 var canvas2 = document.getElementById('c2');
 var ctx2 = canvas2.getContext('2d');
+var canvas3 = document.getElementById('c3');
+var ctx3 = canvas3.getContext('2d');
+var canvas4 = document.getElementById('c4');
+var ctx4 = canvas4.getContext('2d');
 
 
 var factor = 0.8660254037844386; // side * factor == height
@@ -36,6 +40,8 @@ var images = [];
 // Resize target canvases for building triangle strips
 resize(canvas1, x[11], y[3]);
 resize(canvas2, x[11], y[3]);
+resize(canvas3, x[11], y[3]);
+resize(canvas4, x[11], y[3]);
 
 
 function triangle(ctx, x1, y1, x2, y2, x3, y3){
@@ -214,14 +220,24 @@ function mapImagesToStrip(){
     var wedges = initWedges();
     ctx1.strokeRect(0,0,x[11],y[3]);
     ctx2.strokeRect(0,0,x[11],y[3]);
+    ctx3.strokeRect(0,0,x[11],y[3]);
+    ctx4.strokeRect(0,0,x[11],y[3]);
     for (var j = 0; j < 10; j++){
         drawWedge(ctx1, x[j], 0, wedges[j]);
+        drawWedge(ctx2, x[j], 0, wedges[j]);
         drawWedge(ctx1, x[j], 50+fsize, wedges[j+10]);
-        drawWedge(ctx2, x[j], 0, wedges[j+20]);
-        drawWedge(ctx2, x[j], 50+fsize, wedges[j+30]);
+        drawWedge(ctx2, x[j], 50+fsize, wedges[j+10]);
+        drawWedge(ctx3, x[j], 0, wedges[j+20]);
+        drawWedge(ctx4, x[j], 0, wedges[j+20]);
+        drawWedge(ctx3, x[j], 50+fsize, wedges[j+30]);
+        drawWedge(ctx4, x[j], 50+fsize, wedges[j+30]);
         drawTriangle(ctx1, x[j], y[j%2], x[j+1], y[(j+1)%2], x[j+2], y[j%2], '#CCC');
+        drawTriangle(ctx2, x[j], y[j%2], x[j+1], y[(j+1)%2], x[j+2], y[j%2], '#CCC');
         drawTriangle(ctx1, x[j], y[(j+1)%2+2], x[j+1], y[j%2+2], x[j+2], y[(j+1)%2+2], '#CCC');
-        drawTriangle(ctx2, x[j], y[(j+1)%2], x[j+1], y[j%2], x[j+2], y[(j+1)%2], '#CCC');
-        drawTriangle(ctx2, x[j], y[j%2+2], x[j+1], y[(j+1)%2+2], x[j+2], y[j%2+2], '#CCC');
+        drawTriangle(ctx2, x[j], y[(j+1)%2+2], x[j+1], y[j%2+2], x[j+2], y[(j+1)%2+2], '#CCC');
+        drawTriangle(ctx3, x[j], y[(j+1)%2], x[j+1], y[j%2], x[j+2], y[(j+1)%2], '#CCC');
+        drawTriangle(ctx4, x[j], y[(j+1)%2], x[j+1], y[j%2], x[j+2], y[(j+1)%2], '#CCC');
+        drawTriangle(ctx3, x[j], y[j%2+2], x[j+1], y[(j+1)%2+2], x[j+2], y[j%2+2], '#CCC');
+        drawTriangle(ctx4, x[j], y[j%2+2], x[j+1], y[(j+1)%2+2], x[j+2], y[j%2+2], '#CCC');
     }
 }
