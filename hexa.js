@@ -66,7 +66,7 @@ function drawTriangle(ctx, x1, y1, x2, y2, x3, y3, color){
 // Create a canvas element and return it. This canvas will not be printed
 function getCanvas(width,height){
     var canvas = document.createElement('canvas');
-    document.body.appendChild(canvas);
+    document.querySelector('.hexes').appendChild(canvas);
     canvas.setAttribute('width', width);
     canvas.setAttribute('height', height);
     canvas.setAttribute('class', 'noprint');
@@ -110,42 +110,101 @@ function resize(elem, width,height){
     elem.setAttribute('height', Math.ceil(height));
 }
 
+function hexPoints(width, height, rotation){
+    var points = [];
+    var cx = width / 2;
+    var cy = height / 2;
+    var r = Math.min(cx, cy);
+    var angle = Math.PI / 3;
+    var rotRadians = rotation / 180 * Math.PI;
+    var x,y
+    for (var i = 0; i < 6; i++){
+        x = Math.cos(angle * i + rotRadians) * r + cx;
+        y = Math.sin(angle * i + rotRadians) * r + cy;
+        points.push([x,y]);
+    }
+    return points;
+}
+
+function hex(ctx, width, height, rotation){
+    var points = hexPoints(width, height, rotation);
+    ctx.beginPath();
+    ctx.moveTo(points[5][0], points[5][1]);
+    points.forEach(function(pt){
+        ctx.lineTo(pt[0], pt[1]);
+    })
+    // ctx.closePath();
+}
+
+function hexcross(ctx, width, height, rotation){
+    var points = hexPoints(width, height, rotation);
+    ctx.beginPath();
+    for (var i = 0; i < 3; i++){
+        ctx.moveTo(points[i][0], points[i][1]);
+        ctx.lineTo(points[i+3][0], points[i+3][1]);
+    }
+}
+
+function drawHex(ctx){
+    ctx.save();
+    ctx.strokeStyle = '#CCC';
+    hex(ctx, size*2, size*2, 30);
+    ctx.stroke();
+    ctx.restore();
+}
+
+function drawHexcross(ctx, width, height, rotation){
+    ctx.save();
+    ctx.strokeStyle = '#CCC';
+    hexcross(ctx, width, height, rotation);
+    ctx.stroke();
+    ctx.restore();    
+}
 
 
 // This is where the action is. For each url in 'img_urls' load the image and slice it into wedges
 // Each wedge will be on it's own canvas
 // Once all images are loaded and sliced, call 'mapImagesToStrip()' to lay them out on the triangle strips
+
+function sliceAndDice(canvas, img, idx){
+    var ctx = canvas.getContext('2d');
+    var slices = [];
+    images[idx] = slices;
+    ctx.save();
+    // Rotate to get hex aligned with flat parts on top and bottom
+    rotate(ctx, -Math.PI/6);
+    for (var i = 0; i < 3; i++){
+        // grab the 6 wedges, 2 at a time
+        ctx.clearRect(0,0,img_height, img_height); 
+        // rotate into position to grab two wedges
+        rotate(ctx, -Math.PI/3 * 2);
+        hex(ctx, size*2, size*2, 30);
+        ctx.clip();
+        ctx.drawImage(img, 0,0,img.width,img.height,dX,0,img_width,img_height);
+        drawHexcross(ctx, size*2, size*2, 30);
+        slices.push( wedgeUp(canvas));
+        // if (false){
+        if(idx > 2){
+            ctx.save();
+            ctx.clearRect(0,0,img_height,img_height);
+            rotate(ctx, -Math.PI/3*2);
+            ctx.drawImage(img, 0,0,img.width,img.height,dX,0,img_width,img_height);
+            slices.push(wedgeDown(canvas, true));
+            ctx.restore();
+        }else{
+            slices.push(wedgeDown(canvas));
+        }
+    }
+    ctx.restore();
+}
+
 function loadImage(idx){
     var img = new Image();
     img.onload = function(){
         var canvas0 = getCanvas(size*2,size*2);
-        var ctx0 = canvas0.getContext('2d');
         canvas0.className = 'noprint heximage';
-        var slices = [];
-        images.push(slices);
-        ctx0.save();
-        // Rotate to get hex aligned with flat parts on top and bottom
-        rotate(ctx0, -Math.PI/6);
-        for (var i = 0; i < 3; i++){
-            // grab the 6 wedges, 2 at a time
-            ctx0.clearRect(0,0,img_height, img_height); 
-            // rotate into position to grab two wedges
-            rotate(ctx0, -Math.PI/3 * 2);
-            ctx0.drawImage(img, 0,0,img.width,img.height,dX,0,img_width,img_height);
-            slices.push( wedgeUp(canvas0));
-            // if (false){
-            if(idx > 2){
-                ctx0.save();
-                ctx0.clearRect(0,0,img_height,img_height);
-                rotate(ctx0, -Math.PI/3*2);
-                ctx0.drawImage(img, 0,0,img.width,img.height,dX,0,img_width,img_height);
-                slices.push(wedgeDown(canvas0, true));
-                ctx0.restore();
-            }else{
-                slices.push(wedgeDown(canvas0));
-            }
-        }
-        ctx0.restore();
+        canvas0.dataset.index = idx;
+        sliceAndDice(canvas0, img, idx);
         if ((idx + 1) < img_urls.length){
             loadImage(idx+1);
         }else{
@@ -215,6 +274,7 @@ function drawWedge(ctx, x, y, wedge){
         //drawTriangle(...);
     }
 }
+
 
 function mapImagesToStrip(){
     var wedges = initWedges();

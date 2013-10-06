@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Image Capture Test</title>
+	<!-- <link rel="stylesheet" href="style.css" /> -->
+	<!-- <script src="script.js"></script> -->
+</head>
+<body>
+	<h1>Image Capture Test</h1>
+	<canvas width="400" height="400"></canvas>
+	<button class="startVideo">Use Camera</button>
+	<button class="takeSnapshot">Take Picture</button>
+	<video height="400" style="display:none"></video>
+	<img src="disco_vader.png" style="display:none" />
+	<script>
+		var canvas = document.querySelector('canvas');
+		var video = document.querySelector('video');
+		var ctx = canvas.getContext('2d');
+		navigator.getMedia = ( navigator.getUserMedia ||
+                       navigator.webkitGetUserMedia ||
+                       navigator.mozGetUserMedia ||
+                       navigator.msGetUserMedia);
+
+		// mask the part we will clip
+		function mask(){
+			ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+			ctx.fillRect(0,0,400,55);
+			ctx.fillRect(0,55,55,345);
+			ctx.fillRect(345,55,400,345);
+			ctx.fillRect(0,345,400,400);
+		}
+		function drawStartingImage(){
+			var img = document.querySelector('img');
+			ctx.drawImage(img, 0, 0, img.width, img.height);
+		}
+		function start(){
+			drawStartingImage();
+			mask();
+		}
+		function startCamera(){
+			canvas.style.display = 'none';
+			video.style.display = 'block';
+			var videoStream = navigator.getMedia({video:true}, function(stream) {
+				if (navigator.mozGetUserMedia) {
+					video.mozSrcObject = stream;
+				    } else {
+			        var vendorURL = window.URL || window.webkitURL;
+				    video.src = vendorURL.createObjectURL(stream);
+			    }
+			    video.play();
+			},function(err){
+				console.log('an error occurred: %o', err);
+			});
+		}
+
+		function takeSnapshot(){
+			video.pause();
+			video.style.display = 'none';
+			canvas.style.display = 'block';
+			ctx.drawImage(video, 0, 0);
+		}
+		window.addEventListener('load', start, false);
+		document.querySelector('.startVideo').addEventListener('click', startCamera);
+		document.querySelector('.takeSnapshot').addEventListener('click', takeSnapshot);
+	</script>
+</body>
+</html>
