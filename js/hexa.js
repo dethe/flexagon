@@ -1,7 +1,31 @@
 // Map images to the faces of a hexahexaflexagon
 // Change the images on the next line of code to change the mapping. Try to keep an aspect ratio close to 2.9 / 2.5
 
-var img_urls = ['clean_coder.png', 'first_in_class.png', 'popcorn.png', 'quick_fixer.png', 'thimble.png', 'hacktivator.png'];
+var img_urls = [
+    'dataer.png',
+    'gamer.png',
+    'hiver.png',
+    'mobilizer.png',
+    'physical.png',
+    'werefox.png',
+    'barista.png',
+    'bee.png',
+    'cat.png',
+    'karaoke.png',
+    'newser.png',
+    'openbadges.png',
+    'privacy.png',
+    'producer.png',
+    'reveler.png',
+    'sciencer.png',
+    'webmaker.png',
+    'clean_coder.png',
+    'first_in_class.png',
+    'popcorn.png',
+    'quick_fixer.png',
+    'thimble.png',
+    'hacktivator.png'
+];
 
 
 var canvas1 = document.getElementById('c1');
@@ -14,7 +38,7 @@ var canvas4 = document.getElementById('c4');
 var ctx4 = canvas4.getContext('2d');
 
 
-var factor = 0.8660254037844386; // side * factor == height
+var factor = 0.8660254037844386; //  hex side * factor == hex height
 var size = 145;
 var fsize = size * factor;
 var img_width = fsize*2;
@@ -77,7 +101,7 @@ function getCanvas(width,height){
 function wedgeUp(src){
     var dest = getCanvas(size, fsize);
     var ctx = dest.getContext('2d');
-    triangle(ctx, 0,fsize, size/2, 0, size,fsize);
+    triangle(ctx, 0, fsize, size/2, 0, size,fsize);
     ctx.clip();
     ctx.drawImage(src, 0, dX, size, fsize, 0, 0, size, fsize);
     return dest;
@@ -158,7 +182,7 @@ function drawHexcross(ctx, width, height, rotation){
     ctx.strokeStyle = '#CCC';
     hexcross(ctx, width, height, rotation);
     ctx.stroke();
-    ctx.restore();    
+    ctx.restore();
 }
 
 
@@ -171,15 +195,18 @@ function sliceAndDice(canvas, img, idx){
     var slices = [];
     images[idx] = slices;
     ctx.save();
+    var ratio = img.width / img.height;
+    img_height = img_width * ratio;
     // Rotate to get hex aligned with flat parts on top and bottom
     rotate(ctx, -Math.PI/6);
     for (var i = 0; i < 3; i++){
         // grab the 6 wedges, 2 at a time
-        ctx.clearRect(0,0,img_height, img_height); 
+        ctx.clearRect(0,0,img_height, img_height);
         // rotate into position to grab two wedges
         rotate(ctx, -Math.PI/3 * 2);
         hex(ctx, size*2, size*2, 30);
         ctx.clip();
+        // ctx.drawImage(img, 0, 0, img.width, img.height);
         ctx.drawImage(img, 0,0,img.width,img.height,dX,0,img_width,img_height);
         drawHexcross(ctx, size*2, size*2, 30);
         slices.push( wedgeUp(canvas));
@@ -189,6 +216,7 @@ function sliceAndDice(canvas, img, idx){
             ctx.clearRect(0,0,img_height,img_height);
             rotate(ctx, -Math.PI/3*2);
             ctx.drawImage(img, 0,0,img.width,img.height,dX,0,img_width,img_height);
+            drawHexcross(ctx, size*2, size*2, 30);
             slices.push(wedgeDown(canvas, true));
             ctx.restore();
         }else{
@@ -205,13 +233,13 @@ function loadImage(idx){
         canvas0.className = 'noprint heximage';
         canvas0.dataset.index = idx;
         sliceAndDice(canvas0, img, idx);
-        if ((idx + 1) < img_urls.length){
+        if ((idx + 1) < 6){
             loadImage(idx+1);
         }else{
             mapImagesToStrip();
         }
     }
-    img.src = img_urls[idx];
+    img.src = 'img/badge/' + img_urls[idx];
 }
 loadImage(0);
 
@@ -265,7 +293,7 @@ function initWedges(){
     ];
     return wedges;
 }
-    
+
 
 function drawWedge(ctx, x, y, wedge){
     if (wedge){

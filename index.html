@@ -31,7 +31,7 @@
             transform: rotate(150deg);
         }
     </style>
-    <link href="hexa.css" media="print" rel="stylesheet"/>
+    <link href="css/hexa.css" media="print" rel="stylesheet"/>
 </head>
 <body>
     <h3 class="noprint">Click any image to use camera, press any key to finish.</h3>
@@ -41,72 +41,7 @@
     <canvas id="c2" width="1" height="1" class="front"></canvas>
     <canvas id="c3" width="1" height="1" class="back print"></canvas>
     <canvas id="c4" width="1" height="1" class="back"></canvas>
-    <script src="hexa.js"></script>
-    <script>
-        var video = document.querySelector('video');
-        navigator.getMedia = ( navigator.getUserMedia ||
-                       navigator.webkitGetUserMedia ||
-                       navigator.mozGetUserMedia ||
-                       navigator.msGetUserMedia);
-
-        function startCamera(){
-            var videoStream = navigator.getMedia({video:true}, function(stream) {
-                if (navigator.mozGetUserMedia) {
-                    video.mozSrcObject = stream;
-                } else {
-                    var vendorURL = window.URL || window.webkitURL;
-                    video.src = vendorURL.createObjectURL(stream);
-                }
-                video.play();
-                console.log('video ready');
-            },function(err){
-                console.log('an error occurred: %o', err);
-            });
-        }
-        var capturing = false;
-        var captureTarget = null;
-        var drawFrame = null;
-        document.addEventListener('click', function(event){
-            if (!event.target.classList.contains('heximage')){
-                console.log(event.target);
-                return;
-            }
-            if (capturing){
-                console.log('we are already capturing video on another image');
-                return;
-            }
-            capturing = true;
-            captureTarget = event.target;
-            var idx = parseInt(captureTarget.dataset.index, 10);
-            // var ctx = hexcontexts[idx];
-            video.height = video.videoHeight;
-            video.width = video.videoHeight / factor;
-            drawFrame = function(){
-                console.log('drawing frame');
-                sliceAndDice(captureTarget, video, idx);
-                mapImagesToStrip();
-            }
-        });
-        document.addEventListener('keypress', function(event){
-            if (capturing){
-                capturing = false;
-                captureTarget = null;
-                drawFrame = null;
-            }
-        });
-        (function() {
-            var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                  window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-                  window.requestAnimationFrame = requestAnimationFrame;
-        })();
-        function eachFrame(){
-            if (drawFrame){
-                drawFrame();
-            }
-            requestAnimationFrame(eachFrame);
-        }
-        startCamera();
-        requestAnimationFrame(eachFrame);
-    </script>
-</body>
+    <script src="js/hexa.js"></script>
+    <script src="js/camera.js"></script>
+    </body>
 </html>
