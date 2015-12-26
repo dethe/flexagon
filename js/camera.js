@@ -60,5 +60,5 @@ function eachFrame(){
     }
     requestAnimationFrame(eachFrame);
 }
-startCamera();
+// startCamera();
 requestAnimationFrame(eachFrame);
