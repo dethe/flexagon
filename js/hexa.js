@@ -2,29 +2,12 @@
 // Change the images on the next line of code to change the mapping. Try to keep an aspect ratio close to 2.9 / 2.5
 
 var img_urls = [
-    'dataer.png',
-    'gamer.png',
-    'hiver.png',
-    'mobilizer.png',
-    'physical.png',
-    'werefox.png',
-    'barista.png',
-    'bee.png',
-    'cat.png',
-    'karaoke.png',
-    'newser.png',
-    'openbadges.png',
-    'privacy.png',
-    'producer.png',
-    'reveler.png',
-    'sciencer.png',
-    'webmaker.png',
-    'clean_coder.png',
-    'first_in_class.png',
-    'popcorn.png',
-    'quick_fixer.png',
-    'thimble.png',
-    'hacktivator.png'
+    'grace.png',
+    'hivelogo.png',
+    'pixelated.png',
+    'starflake.png',
+    'ihypno.png',
+    'maker_ed.png'
 ];
 
 
@@ -38,15 +21,15 @@ var canvas4 = document.getElementById('c4');
 var ctx4 = canvas4.getContext('2d');
 
 
-var factor = 0.8660254037844386; //  hex side * factor == hex height
+var ratio = Math.sqrt(3) / 2; //  hex side * ratio == hex height
 var size = 145;
-var fsize = size * factor;
-var img_width = fsize*2;
-var img_height = size*2;
-var dX = (img_height - img_width) / 2;
+var fsize = size * ratio;
+var hex_width = fsize*2;
+var hex_height = size*2;
+var dX = (hex_height - hex_width) / 2;
 
 var hx = [0, size/2, size, 3*size/2, size*2];
-var hy = [dX, fsize + dX, size*factor*2 + dX];
+var hy = [dX, fsize + dX, size*ratio*2 + dX];
 var hcx = hx[2];
 var hcy = hx[1];
 
@@ -134,34 +117,32 @@ function resize(elem, width,height){
     elem.setAttribute('height', Math.ceil(height));
 }
 
-function hexPoints(width, height, rotation){
+function hexPoints(width, height){
     var points = [];
     var cx = width / 2;
     var cy = height / 2;
     var r = Math.min(cx, cy);
     var angle = Math.PI / 3;
-    var rotRadians = rotation / 180 * Math.PI;
     var x,y
     for (var i = 0; i < 6; i++){
-        x = Math.cos(angle * i + rotRadians) * r + cx;
-        y = Math.sin(angle * i + rotRadians) * r + cy;
+        x = Math.cos(angle * i) * r + cx;
+        y = Math.sin(angle * i) * r + cy;
         points.push([x,y]);
     }
     return points;
 }
 
-function hex(ctx, width, height, rotation){
-    var points = hexPoints(width, height, rotation);
+function hex(ctx, width, height){
+    var points = hexPoints(width, height);
     ctx.beginPath();
     ctx.moveTo(points[5][0], points[5][1]);
     points.forEach(function(pt){
         ctx.lineTo(pt[0], pt[1]);
     })
-    // ctx.closePath();
 }
 
-function hexcross(ctx, width, height, rotation){
-    var points = hexPoints(width, height, rotation);
+function hexcross(ctx, width, height){
+    var points = hexPoints(width, height);
     ctx.beginPath();
     for (var i = 0; i < 3; i++){
         ctx.moveTo(points[i][0], points[i][1]);
@@ -172,15 +153,15 @@ function hexcross(ctx, width, height, rotation){
 function drawHex(ctx){
     ctx.save();
     ctx.strokeStyle = '#CCC';
-    hex(ctx, size*2, size*2, 30);
+    hex(ctx, size*2, size*2);
     ctx.stroke();
     ctx.restore();
 }
 
-function drawHexcross(ctx, width, height, rotation){
+function drawHexcross(ctx, width, height){
     ctx.save();
     ctx.strokeStyle = '#CCC';
-    hexcross(ctx, width, height, rotation);
+    hexcross(ctx, width, height);
     ctx.stroke();
     ctx.restore();
 }
@@ -195,28 +176,36 @@ function sliceAndDice(canvas, img, idx){
     var slices = [];
     images[idx] = slices;
     ctx.save();
-    var ratio = img.width / img.height;
-    img_height = img_width * ratio;
-    // Rotate to get hex aligned with flat parts on top and bottom
-    rotate(ctx, -Math.PI/6);
+    var img_ratio = img.height / img.width;
+    var img_height, img_width, dx, dy;
+    if (img_ratio < ratio){
+        // image is wider than hex
+        img_height = img.height;
+        img_width = img_height * ratio;
+        dx = (img.width - img_width) / 2;
+        dy = 0;
+    }else{
+        img_width = img.width;
+        img_height = img_width / ratio;
+        dy = (img.height - img_height) / 2;
+        dx = 0;
+    }
     for (var i = 0; i < 3; i++){
         // grab the 6 wedges, 2 at a time
-        ctx.clearRect(0,0,img_height, img_height);
+        ctx.clearRect(0,0,hex_height, hex_height);
         // rotate into position to grab two wedges
         rotate(ctx, -Math.PI/3 * 2);
-        hex(ctx, size*2, size*2, 30);
+        hex(ctx, size*2, size*2);
         ctx.clip();
-        // ctx.drawImage(img, 0, 0, img.width, img.height);
-        ctx.drawImage(img, 0,0,img.width,img.height,dX,0,img_width,img_height);
-        drawHexcross(ctx, size*2, size*2, 30);
+        ctx.drawImage(img, dx,dy,img_width,img_height,dX,0,hex_width,hex_height);
+        drawHexcross(ctx, size*2, size*2);
         slices.push( wedgeUp(canvas));
-        // if (false){
         if(idx > 2){
             ctx.save();
-            ctx.clearRect(0,0,img_height,img_height);
+            ctx.clearRect(0,0,hex_height,hex_height);
             rotate(ctx, -Math.PI/3*2);
-            ctx.drawImage(img, 0,0,img.width,img.height,dX,0,img_width,img_height);
-            drawHexcross(ctx, size*2, size*2, 30);
+            ctx.drawImage(img, 0,0,img.width,img.height,dX,0,hex_width,hex_height);
+            drawHexcross(ctx, size*2, size*2);
             slices.push(wedgeDown(canvas, true));
             ctx.restore();
         }else{
@@ -239,14 +228,14 @@ function loadImage(idx){
             mapImagesToStrip();
         }
     }
-    img.src = 'img/badge/' + img_urls[idx];
+    img.src = 'img/' + img_urls[idx];
 }
 loadImage(0);
 
 
 
 function initWedges(){
-    // Requires all wedge images to exist, so all imaages have to be loaded and sliced into the 'images' array
+    // Requires all wedge images to exist, so all images have to be loaded and sliced into the 'images' array
     var wedges = [
         //front
         null,

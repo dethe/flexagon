@@ -24,24 +24,34 @@
         }
         .heximage{
             transform-origin(50%,50%);
-            transform: rotate(30deg);
             position: relative;
         }
-        .heximage:nth-child(n+20){
-            transform: rotate(150deg);
+        .hidden{
+            position: absolute;
+            left: -5000px;
         }
+
+        .hexes img{
+            height: 1040px;
+        }
+
     </style>
     <link href="css/hexa.css" media="print" rel="stylesheet"/>
 </head>
 <body>
     <h3 class="noprint">Click any image to use camera, press any key to finish.</h3>
-    <div class="hexes"></div>
-    <video height="400" style="display:none"></video>
+    <div class="hexes">
+        <img class="noprint hidden" src="img/grace.png">
+        <img class="noprint hidden" src="img/hivelogo.png">
+        <img class="noprint hidden" src="img/ihypno.png">
+        <img class="noprint hidden" src="img/maker_ed.png">
+        <img class="noprint hidden" src="img/pixelated.png">
+        <img class="noprint hidden" src="img/starflake.png">
+    </div>
     <canvas id="c1" width="1" height="1" class="front print"></canvas>
     <canvas id="c2" width="1" height="1" class="front"></canvas>
     <canvas id="c3" width="1" height="1" class="back print"></canvas>
     <canvas id="c4" width="1" height="1" class="back"></canvas>
     <script src="js/hexa.js"></script>
-    <!-- <script src="js/camera.js"></script> -->
     </body>
 </html>
