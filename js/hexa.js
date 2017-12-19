@@ -1,7 +1,7 @@
 // Map images to the faces of a hexahexaflexagon
 // Change the images on the next line of code to change the mapping. Try to keep an aspect ratio close to 2.9 / 2.5
 
-var img_urls = [
+const img_urls = [
     "pixelated.png",
     "bcit.png",
     "grace.png",
@@ -10,9 +10,11 @@ var img_urls = [
     "modernjive.png"
 ];
 
-var backgrounds = ["#48445B", "teal", "white", "white", "black", "black"];
+const INSET = 30;
 
-var text = [
+const backgrounds = ["#48445B", "teal", "white", "white", "black", "black"];
+
+const text = [
     [
         "Dethe Elza",
         "Æsthetic Programmer",
@@ -22,11 +24,11 @@ var text = [
         null
     ],
     [
-        "Eventsage",
-        "Planning made easy",
-        "http://eventsage.com/",
-        "dethe@eventsage.com",
-        "@esageplanning",
+        "https://bcit.ca/",
+        null,
+        "School of Business",
+        null,
+        "dethe@bcit.ca",
         null
     ],
     [
@@ -40,27 +42,26 @@ var text = [
     [
         "Maker Education",
         "BUILD | LEARN | HACK | TEACH",
-        "dethe@vancouvermakerfoundation.org",
-        "http://meetup.com/Vancouver-Maker-Education-Community/",
-        // alternate: 'http://goo.gl/5XeKJn',
+        null,
+        "http://goo.gl/5XeKJn",
         "@VanMakerFdn",
         "#MakerEdBC"
     ],
     [
-        "Hive Vancouver",
-        "Create + Explore + Share",
-        "http://vanhive.org/",
-        "@HiveLearningVan",
-        "dethe@livingcode.org",
-        "#MakerEdBC"
+        "Participedia",
+        null,
+        "Democratic Participation",
+        null,
+        "http://participedia.net/",
+        null
     ],
     [
-        "iHypno",
-        null,
-        "Mind control for the rest of us",
-        null,
-        "http://dethe.github.io/ihypno",
-        null
+        "Modern Jive Vancouver",
+        "Come learn to dance",
+        "Thursdays at 7:30 pm",
+        "Cambrian Welsh Hall",
+        "215 East 17th St.",
+        "http://modernjivevancouver.com"
     ]
 ];
 
@@ -240,22 +241,20 @@ function sliceAndDice(canvas, img, idx) {
         dy = (img.height - img_height) / 2;
         dx = 0;
     }
-    console.log("dx: %s, dy: %s, %o", dx, dy, img.src.split("/").pop());
-    var inset = 30;
     for (var i = 0; i < 3; i++) {
-        // grab the 6 wedges, 2 at a time
-        ctx.clearRect(0, 0, hex_height, hex_height);
         // rotate into position to grab two wedges
         rotate(ctx, -Math.PI / 3 * 2);
+        // grab the 6 wedges, 2 at a time
+        ctx.clearRect(0, 0, hex_height, hex_height);
         // clip to full hex
         hex(ctx, size * 2, size * 2);
         ctx.stroke();
         // fill inset hex with background
         ctx.save();
-        ctx.translate(inset, inset);
-        hex(ctx, size * 2 - inset * 2, size * 2 - inset * 2);
+        ctx.translate(INSET, INSET);
+        hex(ctx, size * 2 - INSET * 2, size * 2 - INSET * 2);
         ctx.clip();
-        hex(ctx, size * 2 - inset * 2, size * 2 - inset * 2);
+        hex(ctx, size * 2 - INSET * 2, size * 2 - INSET * 2);
         // ctx.fillStyle = backgrounds[idx];
         // ctx.fill();
         // draw image
@@ -271,9 +270,29 @@ function sliceAndDice(canvas, img, idx) {
             hex_height
         );
         ctx.restore();
-        // drawHexcross(ctx, size*2, size*2);
+        drawText(ctx, idx, i * 2);
         slices.push(wedgeUp(canvas));
         slices.push(wedgeDown(canvas));
+        // rotate(ctx, -Math.PI / 3);
+        // drawText(ctx, idx, i * 2 + 1);
+    }
+    drawHexcross(ctx, size * 2, size * 2);
+    ctx.restore();
+}
+
+function drawText(ctx, idx, i) {
+    ctx.save();
+    ctx.fillStyle = "#000";
+    ctx.textAlign = "center";
+    ctx.font = "10px Helvetica";
+    let str = text[idx][i];
+    if (str) {
+        ctx.fillText(str, hex_width / 2 + INSET / 2, hex_height - INSET);
+    }
+    rotate(ctx, Math.PI / 3);
+    str = text[idx][i + 1];
+    if (str) {
+        ctx.fillText(str, hex_width / 2 + INSET / 2, hex_height - INSET);
     }
     ctx.restore();
 }
