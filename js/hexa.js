@@ -16,52 +16,52 @@ const backgrounds = ["#48445B", "teal", "white", "white", "black", "black"];
 
 const text = [
     [
-        "Dethe Elza",
-        "Æsthetic Programmer",
-        "dethe@livingcode.org",
-        "http://livingcode.org/",
-        "@dethe",
-        null
+        "00 @dethe",
+        "01 livingcode.org",
+        "02 dethe@livingcode.org",
+        "03 Dethe Elza",
+        "04 Æsthetic Programmer",
+        "05 Lichen Girls: A Novel"
     ],
     [
-        "https://bcit.ca/",
-        null,
-        "School of Business",
-        null,
-        "dethe@bcit.ca",
-        null
+        "10 School of Business",
+        "11 bcit.ca",
+        "12 dethe@bcit.ca",
+        "13 Dethe Elza",
+        "14 Instructor",
+        "15 BCIT"
     ],
     [
-        "Waterbear",
-        "Programming for humans",
-        "http://waterbearlang.com/",
-        "waterbear@waterbearlang.com",
-        "@waterbearlang",
-        null
+        "20 @waterbearlang",
+        "21 waterbear.fun",
+        "22 dethe@waterbear.fun",
+        "23 Dethe Elza",
+        "24 Programming for fun",
+        "25 Waterbear"
     ],
     [
-        "Maker Education",
-        "BUILD | LEARN | HACK | TEACH",
-        null,
-        "http://goo.gl/5XeKJn",
-        "@VanMakerFdn",
-        "#MakerEdBC"
+        "30 LEARN|HACK|TEACH",
+        "31 MakerEdBC.com",
+        "32 @HiveLearningVan",
+        "33 Dethe Elza",
+        "34 Coordinator",
+        "35 Maker Education"
     ],
     [
-        "Participedia",
-        null,
-        "Democratic Participation",
-        null,
-        "http://participedia.net/",
-        null
+        "40 Democratic Participation",
+        "41 participedia.net",
+        "42 Open Data Politics",
+        "43 Dethe Elza",
+        "44 Lead Developer",
+        "45 Participedia"
     ],
     [
-        "Modern Jive Vancouver",
-        "Come learn to dance",
-        "Thursdays at 7:30 pm",
-        "Cambrian Welsh Hall",
-        "215 East 17th St.",
-        "http://modernjivevancouver.com"
+        "50 Thursdays at 7:30 pm",
+        "51 modernjive.ca",
+        "52 215 East 17th St.",
+        "53 Dethe Elza",
+        "54 Instructor",
+        "55 Modern Jive Vancouver"
     ]
 ];
 
@@ -156,11 +156,26 @@ function wedgeDown(src, offside) {
     return dest;
 }
 
-// Rotate the canvas (currently only applies to canvas0)
+// rotate the canvas in place
 function rotate(ctx, theta) {
-    ctx.translate(size, size);
+    var width = ctx.canvas.width;
+    var height = ctx.canvas.height;
+    ctx.translate(width / 2, height / 2);
     ctx.rotate(theta);
-    ctx.translate(-size, -size);
+    ctx.translate(-width / 2, -height / 2);
+}
+
+// Rotate the canvas, returning a new canvas
+function rotateNew(srcctx, theta) {
+    var width = srcctx.canvas.width;
+    var height = srcctx.canvas.height;
+    let canvas = getCanvas(width, height);
+    let ctx = canvas.getContext("2d");
+    ctx.translate(width / 2, height / 2);
+    ctx.rotate(theta);
+    ctx.translate(-width / 2, -height / 2);
+    ctx.drawImage(srcctx.canvas, 0, 0);
+    return canvas;
 }
 
 // resize the given canvas
@@ -241,40 +256,35 @@ function sliceAndDice(canvas, img, idx) {
         dy = (img.height - img_height) / 2;
         dx = 0;
     }
+    ctx.clearRect(0, 0, hex_height, hex_height);
+    hex(ctx, size * 2, size * 2);
+    ctx.stroke();
+    for (let i = 0; i < 6; i++) {
+        rotate(ctx, -Math.PI / 3);
+        drawText(ctx, idx, i);
+    }
+    ctx.save();
+    ctx.translate(INSET, INSET);
+    // clip to full hex
+    hex(ctx, size * 2 - INSET * 2, size * 2 - INSET * 2);
+    ctx.clip();
+    ctx.drawImage(
+        img,
+        -dx,
+        -dy,
+        img_width,
+        img_height,
+        -dX + 10,
+        10,
+        hex_width,
+        hex_height
+    );
+    ctx.restore();
     for (var i = 0; i < 3; i++) {
         // rotate into position to grab two wedges
-        rotate(ctx, -Math.PI / 3 * 2);
-        // grab the 6 wedges, 2 at a time
-        ctx.clearRect(0, 0, hex_height, hex_height);
-        // clip to full hex
-        hex(ctx, size * 2, size * 2);
-        ctx.stroke();
-        // fill inset hex with background
-        ctx.save();
-        ctx.translate(INSET, INSET);
-        hex(ctx, size * 2 - INSET * 2, size * 2 - INSET * 2);
-        ctx.clip();
-        hex(ctx, size * 2 - INSET * 2, size * 2 - INSET * 2);
-        // ctx.fillStyle = backgrounds[idx];
-        // ctx.fill();
-        // draw image
-        ctx.drawImage(
-            img,
-            -dx,
-            -dy,
-            img_width,
-            img_height,
-            -dX + 10,
-            10,
-            hex_width,
-            hex_height
-        );
-        ctx.restore();
-        drawText(ctx, idx, i * 2);
-        slices.push(wedgeUp(canvas));
-        slices.push(wedgeDown(canvas));
-        // rotate(ctx, -Math.PI / 3);
-        // drawText(ctx, idx, i * 2 + 1);
+        let cvs = rotateNew(ctx, -Math.PI / 3 * 2 * (i + 0));
+        slices.push(wedgeUp(cvs));
+        slices.push(wedgeDown(cvs));
     }
     drawHexcross(ctx, size * 2, size * 2);
     ctx.restore();
@@ -289,11 +299,11 @@ function drawText(ctx, idx, i) {
     if (str) {
         ctx.fillText(str, hex_width / 2 + INSET / 2, hex_height - INSET);
     }
-    rotate(ctx, Math.PI / 3);
-    str = text[idx][i + 1];
-    if (str) {
-        ctx.fillText(str, hex_width / 2 + INSET / 2, hex_height - INSET);
-    }
+    // rotate(ctx, Math.PI / 3);
+    // str = text[idx][i + 1];
+    // if (str) {
+    //     ctx.fillText(str, hex_width / 2 + INSET / 2, hex_height - INSET);
+    // }
     ctx.restore();
 }
 
