@@ -148,7 +148,7 @@ function wedgeDown(src, offside) {
     var ctx = dest.getContext("2d");
     triangle(ctx, 0, 0, size / 2, fsize, size, 0);
     ctx.clip();
-    if (true) {
+    if (offside) {
         ctx.drawImage(src, 0, dX + fsize, size, fsize, 0, 0, size, fsize);
     } else {
         ctx.drawImage(src, size / 2, dX, size, fsize, 0, 0, size, fsize);
@@ -263,28 +263,37 @@ function sliceAndDice(canvas, img, idx) {
         rotate(ctx, -Math.PI / 3);
         drawText(ctx, idx, i);
     }
-    ctx.save();
-    ctx.translate(INSET, INSET);
-    // clip to full hex
-    hex(ctx, size * 2 - INSET * 2, size * 2 - INSET * 2);
-    ctx.clip();
-    ctx.drawImage(
-        img,
-        -dx,
-        -dy,
-        img_width,
-        img_height,
-        -dX + 10,
-        10,
-        hex_width,
-        hex_height
-    );
-    ctx.restore();
+    // ctx.save();
+    // ctx.translate(INSET, INSET);
+    // // clip to full hex
+    // hex(ctx, size * 2 - INSET * 2, size * 2 - INSET * 2);
+    // ctx.clip();
+    // ctx.drawImage(
+    //     img,
+    //     -dx,
+    //     -dy,
+    //     img_width,
+    //     img_height,
+    //     -dX + 10,
+    //     10,
+    //     hex_width,
+    //     hex_height
+    // );
+    // ctx.restore();
     for (var i = 0; i < 3; i++) {
         // rotate into position to grab two wedges
-        let cvs = rotateNew(ctx, -Math.PI / 3 * 2 * (i + 0));
-        slices.push(wedgeUp(cvs));
-        slices.push(wedgeDown(cvs));
+        // var rot = Math.PI / 3 * 2;
+        // if (idx < 3) {
+        //     rot *= -1;
+        // }
+        let cvs = rotateNew(ctx, -Math.PI / 3 * 2 * i);
+        if (idx < 3) {
+            slices.push(wedgeUp(cvs));
+            slices.push(wedgeDown(cvs));
+        } else {
+            slices.push(wedgeDown(cvs, true));
+            slices.push(wedgeUp(cvs));
+        }
     }
     drawHexcross(ctx, size * 2, size * 2);
     ctx.restore();
@@ -297,13 +306,13 @@ function drawText(ctx, idx, i) {
     ctx.font = "10px Helvetica";
     let str = text[idx][i];
     if (str) {
-        ctx.fillText(str, hex_width / 2 + INSET / 2, hex_height - INSET);
+        //        ctx.fillText(str, hex_width / 2 + INSET / 2, hex_height - INSET);
+        ctx.fillText(
+            "" + idx + i,
+            hex_width / 2 + INSET / 2,
+            hex_height - INSET
+        );
     }
-    // rotate(ctx, Math.PI / 3);
-    // str = text[idx][i + 1];
-    // if (str) {
-    //     ctx.fillText(str, hex_width / 2 + INSET / 2, hex_height - INSET);
-    // }
     ctx.restore();
 }
 
@@ -420,8 +429,8 @@ function mapImagesToStrip() {
     });
     [ctx3, ctx4].forEach(function(cx) {
         for (var j = 0; j < 10; j++) {
-            drawWedge(cx, x[j], 0, wedges[j + 20]);
-            drawWedge(cx, x[j], 50 + fsize, wedges[j + 30]);
+            drawWedge(cx, x[j], 0, wedges[9 - j + 20]);
+            drawWedge(cx, x[j], 50 + fsize, wedges[9 - j + 30]);
             drawTriangle(
                 cx,
                 x[j],
