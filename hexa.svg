@@ -1,0 +1,102 @@
+<svg viewBox = "0 0 1400 1100" width="14in" height="11in" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        text{
+          font-family: sans-serif;
+          text-anchor: middle;
+        }
+        .face {
+          font-size: 30px;
+        }
+        .arrow {
+          font-size: 24px;
+        }
+    </style>
+    <defs>
+        <path id="tup" d="M 0 121 L 70 0 140 121 Z" stroke="#CCC" fill="none" />
+        <path id="tdown" d="M 0 0 L 70 121 140 0 Z" stroke="#CCC" fill="#EEE" />
+    </defs>
+    <!-- row one -->
+    <use href="#tup" x="0" />
+    <text x="70" y="70" class="face">A1</text>
+    <text x="70" y="100" class="arrow">↓</text>
+    <use href="#tdown" x="70" />
+    <text x="140" y="70" class="face">B1</text>
+    <text x="140" y="30" class="arrow">↑</text>
+    <use href="#tup" x="140" />
+    <text x="210" y="70" class="face">C1</text>
+    <text x="210" y="100" class="arrow">↓</text>
+    <use href="#tdown" x="210" />
+    <text x="280" y="70" class="face">A2</text>
+    <use href="#tup" x="280" />
+    <text x="350" y="70" class="face">B2</text>
+    <use href="#tdown" x="350" />
+    <text x="420" y="70" class="face">C2</text>
+    <use href="#tup" x="420" />
+    <text x="490" y="70" class="face">A3</text>
+    <use href="#tdown" x="490" />
+    <text x="560" y="70" class="face">B3</text>
+    <use href="#tup" x="560" />
+    <text x="630" y="70" class="face">C3</text>
+    <use href="#tdown" x="630" />
+    <text x="700" y="70" class="face">A4</text>
+    <use href="#tup" x="700" />
+    <text x="770" y="70" class="face">B4</text>
+    <use href="#tdown" x="770" />
+    <text x="840" y="70" class="face">C4</text>
+    <use href="#tup" x="840" />
+    <text x="910" y="70" class="face">A5</text>
+    <use href="#tdown" x="910" />
+    <text x="980" y="70" class="face">B5</text>
+    <use href="#tup" x="980" />
+    <text x="1050" y="70" class="face">C5</text>
+    <use href="#tdown" x="1050" />
+    <text x="1120" y="70" class="face">A6</text>
+    <use href="#tup" x="1120" />
+    <text x="1190" y="70" class="face">B6</text>
+    <use href="#tdown" x="1190" />
+    <text x="1260" y="70" class="face">C6</text>
+    <use href="#tup" x="1260" /> 
+    <text x="1330" y="70" class="face"></text>
+    <!-- row two -->
+    <use href="#tdown" x="0" y="121" />
+    <text x="70" y="191" class="face"></text>
+    <use href="#tup" x="70" y="121" />
+    <text x="140" y="191" class="face">D1</text>
+    <text x="140" y="221" class="arrow">↓</text>
+    <use href="#tdown" x="140" y="121" />
+    <text x="210" y="191" class="face">D2</text>
+    <use href="#tup" x="210" y="121" />
+    <text x="280" y="191" class="face">E1</text>
+    <text x="280" y="221" class="arrow">↓</text>
+    <use href="#tdown" x="280" y="121" />
+    <text x="350" y="191" class="face">E2</text>
+    <use href="#tup" x="350" y="121" />
+    <text x="420" y="191" class="face">F1</text>
+    <text x="420" y="221" class="arrow">↓</text>
+    <use href="#tdown" x="420" y="121" />
+    <text x="490" y="191" class="face">F2</text>
+    <use href="#tup" x="490" y="121" />
+    <text x="560" y="191" class="face">D3</text>
+    <use href="#tdown" x="560" y="121" />
+    <text x="630" y="191" class="face">D4</text>
+    <use href="#tup" x="630" y="121" />
+    <text x="700" y="191" class="face">E3</text>
+    <use href="#tdown" x="700" y="121" />
+    <text x="770" y="191" class="face">E4</text>
+    <use href="#tup" x="770" y="121" />
+    <text x="840" y="191" class="face">F3</text>
+    <use href="#tdown" x="840" y="121" />
+    <text x="910" y="191" class="face">F4</text>
+    <use href="#tup" x="910" y="121" />
+    <text x="980" y="191" class="face">D5</text>
+    <use href="#tdown" x="980" y="121" />
+    <text x="1050" y="191" class="face">D6</text>
+    <use href="#tup" x="1050" y="121" />
+    <text x="1120" y="191" class="face">E5</text>
+    <use href="#tdown" x="1120" y="121" />
+    <text x="1190" y="191" class="face">E6</text>
+    <use href="#tup" x="1190" y="121" />
+    <text x="1260" y="191" class="face">F5</text>
+    <use href="#tdown" x="1260" y="121" /> 
+    <text x="1330" y="191" class="face">F6</text>
+</svg>
