@@ -158,7 +158,7 @@ function drawHexcross(ctx, width, height, rotation){
     ctx.strokeStyle = '#CCC';
     hexcross(ctx, width, height, rotation);
     ctx.stroke();
-    ctx.restore();    
+    ctx.restore();
 }
 
 
@@ -175,7 +175,7 @@ function sliceAndDice(canvas, img, idx){
     rotate(ctx, -Math.PI/6);
     for (var i = 0; i < 3; i++){
         // grab the 6 wedges, 2 at a time
-        ctx.clearRect(0,0,img_height, img_height); 
+        ctx.clearRect(0,0,img_height, img_height);
         // rotate into position to grab two wedges
         rotate(ctx, -Math.PI/3 * 2);
         hex(ctx, size*2, size*2, 30);
@@ -265,7 +265,7 @@ function initWedges(){
     ];
     return wedges;
 }
-    
+
 
 function drawWedge(ctx, x, y, wedge){
     if (wedge){
@@ -283,14 +283,14 @@ function mapImagesToStrip(){
     ctx3.strokeRect(0,0,x[11],y[3]);
     ctx4.strokeRect(0,0,x[11],y[3]);
     for (var j = 0; j < 10; j++){
-        drawWedge(ctx1, x[j], 0, wedges[j]);
-        drawWedge(ctx2, x[j], 0, wedges[j]);
-        drawWedge(ctx1, x[j], 50+fsize, wedges[j+10]);
-        drawWedge(ctx2, x[j], 50+fsize, wedges[j+10]);
-        drawWedge(ctx3, x[j], 0, wedges[j+20]);
-        drawWedge(ctx4, x[j], 0, wedges[j+20]);
-        drawWedge(ctx3, x[j], 50+fsize, wedges[j+30]);
-        drawWedge(ctx4, x[j], 50+fsize, wedges[j+30]);
+        // drawWedge(ctx1, x[j], 0, wedges[j]);
+        // drawWedge(ctx2, x[j], 0, wedges[j]);
+        // drawWedge(ctx1, x[j], 50+fsize, wedges[j+10]);
+        // drawWedge(ctx2, x[j], 50+fsize, wedges[j+10]);
+        // drawWedge(ctx3, x[j], 0, wedges[j+20]);
+        // drawWedge(ctx4, x[j], 0, wedges[j+20]);
+        // drawWedge(ctx3, x[j], 50+fsize, wedges[j+30]);
+        // drawWedge(ctx4, x[j], 50+fsize, wedges[j+30]);
         drawTriangle(ctx1, x[j], y[j%2], x[j+1], y[(j+1)%2], x[j+2], y[j%2], '#CCC');
         drawTriangle(ctx2, x[j], y[j%2], x[j+1], y[(j+1)%2], x[j+2], y[j%2], '#CCC');
         drawTriangle(ctx1, x[j], y[(j+1)%2+2], x[j+1], y[j%2+2], x[j+2], y[(j+1)%2+2], '#CCC');
