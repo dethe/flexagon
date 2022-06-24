@@ -1,25 +1,9 @@
-*{
-    margin: 0;
-    border: 0;
-    padding: 0;
+* {
+  margin: 0;
+  border: 0;
+  padding: 0;
 }
 
-.noprint{
-    display: none;
-}
-
-.front{
-    float: left;
-}
-
-.back{
-    float: right;
-}
-
-.c2{
-    page-break-after: always;
-}
-
-canvas{
-    margin-bottom: 50px;
+.noprint {
+  display: none;
 }
