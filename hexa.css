@@ -7,3 +7,7 @@
 .noprint {
   display: none;
 }
+
+svg {
+  margin-bottom: 2em;
+}

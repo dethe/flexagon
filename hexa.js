@@ -1,5 +1,5 @@
-const side = 125; // 10 triangles across 1250 pixels
-const ht = 108.25; // height of triangle, 108.2531...
+const side = 172; // 10 triangles across 1250 pixels
+const ht = 149; // height of triangle, 108.2531...
 const ht2 = ht * 2;
 const off = side / 2;
 const cy1 = ht / 3; // centers of the triangles
@@ -7,62 +7,90 @@ const cy2 = (2 * ht) / 3;
 const cy3 = ht + cy1;
 const cy4 = ht + cy2;
 
-const strip = document.querySelector("#strip");
+const strip1 = document.querySelector("#strip1");
+const strip2 = document.querySelector("#strip2");
 const ns = "http://www.w3.org/2000/svg";
 
-function line(x1, y1, x2, y2, color) {
+function line(strip, x1, y1, x2, y2) {
   let l = document.createElementNS(ns, "line");
-  l.setAttribute("x1", x1);
-  l.setAttribute("y1", y1);
-  l.setAttribute("x2", x2);
-  l.setAttribute("y2", y2);
-  l.setAttribute("stroke", color);
+  l.setAttribute("x1", x1 * side);
+  l.setAttribute("y1", y1 * ht);
+  l.setAttribute("x2", x2 * side);
+  l.setAttribute("y2", y2 * ht);
+  l.setAttribute("stroke", "#CCC");
   strip.appendChild(l);
 }
 
-function text(txt, x, y, color, flip) {
+function text(strip, txt, x, y, rotation) {
   let t = document.createElementNS(ns, "text");
   t.innerHTML = txt;
-  //   t.classList.add("noprint");
-  t.setAttribute("x", x);
-  t.setAttribute("y", y);
-  t.setAttribute("fill", color);
+  t.setAttribute("x", x * side);
+  t.setAttribute("y", y * ht);
+  t.setAttribute("fill", "#CCC");
   t.setAttribute("text-anchor", "middle");
   t.setAttribute("dominant-baseline", "middle");
   t.setAttribute("font-size", "2em");
   t.setAttribute("font-family", "sans-serif");
-  if (flip) {
-    t.setAttribute("transform", `rotate(180, ${x}, ${y})`);
+  if (rotation) {
+    t.setAttribute("transform", `rotate(${rotation}, ${x * side}, ${y * ht})`);
   }
   strip.appendChild(t);
 }
 
-const t1 = ["2a", "1b", "3b", "2c", "1d", "3d", "2e", "1f", "3f"];
-const t2 = ["1a", "3a", "2b", "1c", "3c", "2d", "1e", "3e", "2f", ""];
-const t3 = ["", "4b", "5b", "6b", "4d", "5d", "6d", "4f", "5f", "6f"];
-const t4 = ["4a", "5a", "6a", "4c", "5c", "6c", "4e", "5e", "6e"];
+const t1 = ["2a", "1b", "3b", "2c", "1d"];
+const t2 = ["1a", "3a", "2b", "1c", "3c"];
+const t3 = ["6f", "4b", "5b", "6b", "4d"];
+const t4 = ["6e", "4a", "5a", "6a", "4c"];
+const t5 = ["3d", "2e", "1f", "3f"];
+const t6 = ["2d", "1e", "3e", "2f"];
+const t7 = ["5d", "6d", "4f", "5f"];
+const t8 = ["5c", "6c", "4e", "5e"];
 
-for (let n = 0; n < 10; n++) {
-  let x1 = n * side;
-  let x2 = x1 + off;
-  let x3 = (n + 1) * side;
-  line(x1, ht, x2, 0, "#CCC");
-  if (n < 9) {
-    line(x2, 0, x3, ht, "#FCC");
-    text(t1[n], x3, cy1, "#CCC");
+function drawLines() {
+  // diagonal lower left to upper right
+  for (let n = 0; n < 6; n++) {
+    line(strip1, n, 2, n + 1, 0);
   }
-  text(t2[n], x2, cy2, "#CCC");
-  line(x2, ht2, x3, ht, "#FCC");
-  if (n) {
-    line(x1, ht, x2, ht2, "#CCC");
+  for (let n = 0; n < 5; n++) {
+    line(strip2, n, 2, n + 1, 0);
   }
-  text(t3[n], x2, cy3, "#CCC", true);
-  if (n < 9) {
-    text(t4[n], x3, cy4, "#CCC", true);
+  // diagonal upper left to lower right
+  // first and last are half-height
+  line(strip1, 0.5, 1, 1, 2);
+  for (let n = 0; n < 4; n++) {
+    line(strip1, n + 1, 0, n + 2, 2);
+  }
+  line(strip1, 5, 0, 5.5, 1);
+  line(strip2, 0.5, 1, 1, 2);
+  for (let n = 0; n < 3; n++) {
+    line(strip2, n + 1, 0, n + 2, 2);
+  }
+  line(strip2, 4, 0, 4.5, 1);
+  // horizontal lines
+  line(strip1, 1, 0, 6, 0);
+  line(strip1, 0.5, 1, 5.5, 1);
+  line(strip1, 0, 2, 5, 2);
+  line(strip2, 1, 0, 5, 0);
+  line(strip2, 0.5, 1, 4.5, 1);
+  line(strip2, 0, 2, 4, 2);
+}
+
+function addText() {
+  for (let n = 0; n < 5; n++) {
+    text(strip1, t1[n], n + 1.5, 0.33, 0);
+    text(strip1, t2[n], n + 1, 0.66, 0);
+    text(strip1, t3[n], n + 1, 1.33, 0);
+    text(strip1, t4[n], n + 0.5, 1.66, 0);
+  }
+  for (let n = 0; n < 4; n++) {
+    text(strip2, t5[n], n + 1.5, 0.33, 0);
+    text(strip2, t6[n], n + 1, 0.66, 0);
+    text(strip2, t7[n], n + 1, 1.33, 0);
+    text(strip2, t8[n], n + 0.5, 1.66, 0);
   }
 }
-line(off, 0, side * 9 + off, 0, "#CFC");
-line(0, ht, side * 10, ht, "#CCF");
-line(off, ht2, side * 9 + off, ht2, "#0CC");
+
+drawLines();
+addText();
 
 console.log("done");
