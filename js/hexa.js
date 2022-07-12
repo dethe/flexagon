@@ -209,6 +209,27 @@ class Image {
   }
 }
 
+// class Hex {
+//   static lastIndex = 0;
+//   constructor(image, triangleMappings) {
+//     this.index = ++this.constructor.lastIndex;
+//     this.scale = 1.0;
+//     this.pan = { x: 0, y: 0 };
+//     this.rotated = false;
+//     this.triangleMappings = triangleMappings;
+//     this.image = image;
+//     this.originalWidth = image.width;
+//     this.originalHeight = image.height;
+//   }
+//   draw() {
+//     // replaces hex_to_strip()
+//     // called once to setup mapping
+//     this.triangleMappings.forEach((m, idx) => {
+//       useHex(m.x, m.y, idx);
+//     });
+//   }
+// }
+
 const images = [
   new Image("#image1"),
   new Image("#image2"),
@@ -239,9 +260,11 @@ function subscribe_events() {
 function hex_to_strip() {
   // multiplier for x, multiplier for y, id
   // useHex(image, dx, dy, hexTriangle
-  useHex(strip1, 1, 0, 0, 1);
-  useHex(strip1, 1, 1, 0, 2);
-  useHex(strip1, 1, 2, 0, 3);
+  // NOTE: currently you have to add the offset for top/left position in strip, but *subtract*
+  // the offset of the triangle in the hexagon. Normalize from hex first
+  useHex(strip1, 1, 0.5, 0, 1);
+  useHex(strip1, 1, 1.5, 0, 2);
+  useHex(strip1, 1, 2.5, 0, 3);
   useHex(strip1, 1, 3.5, -1, 4);
   useHex(strip2, 1, 1.5, -1, 5);
   useHex(strip2, 1, 3.5, -1, 6);
