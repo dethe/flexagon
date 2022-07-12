@@ -1,21 +1,21 @@
-import { html, svg, $, $$ } from "./dom.js";
+import { html, svg, $, $$, listen } from "./dom.js";
 
 const side = 172; // 10 triangles across 1250 pixels
 const ht = 149; // height of triangle, 108.2531...
 
-const strip1 = document.querySelector("#strip1");
-const strip2 = document.querySelector("#strip2");
-const ns = "http://www.w3.org/2000/svg";
+const strip1 = $("#strip1");
+const strip2 = $("#strip2");
+const hex = $("#hex");
+const hexDefs = $("defs");
 
-// Text labels for triangles
-// const t1 = ["2a", "1b", "3b", "2c", "1d"]; // strip 1, row 1, point down
-// const t2 = ["1a", "3a", "2b", "1c", "3c"]; // strip 1, row 1, point up
-// const t3 = ["6f", "4b", "5b", "6b", "4d"]; // strip 1, row 2, point down
-// const t4 = ["6e", "4a", "5a", "6a", "4c"]; // strip 1, row 2, point up
-// const t5 = ["3d", "2e", "1f", "3f"]; // strip 2, row 1, point down
-// const t6 = ["2d", "1e", "3e", "2f"]; // strip 2, row 1, point up
-// const t7 = ["5d", "6d", "4f", "5f"]; // strip 2, row 2, point down
-// const t8 = ["5c", "6c", "4e", "5e"]; // strip 2, row 2, point up
+// hex points
+const p0 = { x: side * 1, y: ht * 1 }; // centre point
+const p1 = { x: side * 0, y: ht * 1 };
+const p2 = { x: side * 0.5, y: ht * 0 };
+const p3 = { x: side * 1.5, y: ht * 0 };
+const p4 = { x: side * 2, y: ht * 1 };
+const p5 = { x: side * 1.5, y: ht * 2 };
+const p6 = { x: side * 0.5, y: ht * 2 };
 
 // text and rotations for strips
 // key: t=text, s=strip, a=angle of rotation, x,y centerpoint
@@ -93,6 +93,60 @@ function text(strip, txt, x, y, rotation) {
   );
 }
 
+function triClip(num, p1, p2, p3) {
+  hexDefs.appendChild(
+    svg(
+      "clipPath",
+      {
+        id: `tri${num}`,
+      },
+      svg("polygon", {
+        points: `${p1.x} ${p1.y} ${p2.x} ${p2.y} ${p3.x} ${p3.y}`,
+      })
+    )
+  );
+}
+
+// copy triangle from hex to strip
+function useHex(strip, img, dx, dy, id) {
+  // should include rotation and midpoint of triangle in strip
+  strip.appendChild(
+    svg("use", {
+      href: `#hextri${img}_${id}`,
+      x: side * dx,
+      y: ht * dy,
+    })
+  );
+}
+
+function use(num) {
+  for (let img = 1; img < 7; img++) {
+    // use the image from defs and clip with the triangles from defs.
+    hex.appendChild(
+      svg("use", {
+        href: `#image${img}`,
+        id: `hextri${img}_${num}`,
+        "clip-path": `url(#tri${num})`,
+      })
+    );
+  }
+}
+
+function draw_hex() {
+  for (let n = 1; n < 7; n++) {
+    use(n);
+  }
+}
+
+function prepDefs() {
+  triClip(1, p1, p2, p0);
+  triClip(2, p2, p3, p0);
+  triClip(3, p3, p4, p0);
+  triClip(4, p4, p5, p0);
+  triClip(5, p5, p6, p0);
+  triClip(6, p6, p1, p0);
+}
+
 function drawLines() {
   // diagonal lower left to upper right
   for (let n = 0; n < 6; n++) {
@@ -122,7 +176,84 @@ function drawLines() {
   line(strip2, 0, 2, 4, 2);
 }
 
+class Image {
+  constructor(sel, scale, x, y) {
+    this.image = $(sel);
+    this.originalWidth = this.image.width;
+    this.originalHeight = this.image.height;
+    this._scale = scale || 1;
+    this._x = x || 0;
+    this._y = y || 0;
+  }
+  get x() {
+    return this._x;
+  }
+  set x(val) {
+    this._x = val;
+    this.image.setAttribute("x", this._x);
+  }
+  get y() {
+    return this._y;
+  }
+  set y(val) {
+    this._y = val;
+    this.image.setAttribute("y", this._y);
+  }
+  get scale() {
+    return this._scale;
+  }
+  set scale(val) {
+    this._scale = val;
+    this.image.setAttribute("width", this.originalWidth * this._scale);
+    this.image.setAttribute("height", this.originalHeight * this._scale);
+  }
+}
+
+const images = [
+  new Image("#image1"),
+  new Image("#image2"),
+  new Image("#image3"),
+  new Image("#image4"),
+  new Image("#image5"),
+  new Image("#image6"),
+];
+
+let image = images[0];
+
+function chooseImage(evt) {
+  let idx = parseInt(evt.target.value, 10) - 1; // target values are 1-based
+  image = images[idx];
+  hex.viewBox.baseVal.x = 350 * idx;
+}
+
+function subscribe_events() {
+  listen("#scale-down", "click", () => (image.scale *= 0.8));
+  listen("#scale-up", "click", () => (image.scale *= 1.2));
+  listen("#pan-right", "click", () => (image.x += 10));
+  listen("#pan-left", "click", () => (image.x -= 10));
+  listen("#pan-up", "click", () => (image.y -= 10));
+  listen("#pan-down", "click", () => (image.y += 10));
+  listen("input[type=radio]", "input", chooseImage);
+}
+
+function hex_to_strip() {
+  // multiplier for x, multiplier for y, id
+  // useHex(image, dx, dy, hexTriangle
+  useHex(strip1, 1, 0, 0, 1);
+  useHex(strip1, 1, 1, 0, 2);
+  useHex(strip1, 1, 2, 0, 3);
+  useHex(strip1, 1, 3.5, -1, 4);
+  useHex(strip2, 1, 1.5, -1, 5);
+  useHex(strip2, 1, 3.5, -1, 6);
+  // next
+  // useHex(2, 0.5, 0, 1);
+}
+
 drawLines();
 addText();
+prepDefs();
+draw_hex();
+subscribe_events();
+hex_to_strip();
 
 console.log("done");
