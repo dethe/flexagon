@@ -259,15 +259,15 @@ function subscribe_events() {
 
 function hex_to_strip() {
   // multiplier for x, multiplier for y, id
-  // useHex(image, dx, dy, hexTriangle
+  // useHex(strip, image, dx, dy, hexTriangle
   // NOTE: currently you have to add the offset for top/left position in strip, but *subtract*
   // the offset of the triangle in the hexagon. Normalize from hex first
   useHex(strip1, 1, 0.5, 0, 1);
   useHex(strip1, 1, 1.5, 0, 2);
   useHex(strip1, 1, 2.5, 0, 3);
-  useHex(strip1, 1, 3.5, -1, 4);
-  useHex(strip2, 1, 1.5, -1, 5);
-  useHex(strip2, 1, 3.5, -1, 6);
+  useHex(strip1, 1, 4, -1, 4);
+  useHex(strip2, 1, 1, -1, 5);
+  useHex(strip2, 1, 3, -1, 6);
   // next
   // useHex(2, 0.5, 0, 1);
 }
