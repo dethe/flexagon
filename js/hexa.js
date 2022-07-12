@@ -244,7 +244,7 @@ let image = images[0];
 function chooseImage(evt) {
   let idx = parseInt(evt.target.value, 10) - 1; // target values are 1-based
   image = images[idx];
-  hex.viewBox.baseVal.x = 350 * idx;
+  hex.viewBox.baseVal.x = -350 * idx;
 }
 
 function subscribe_events() {
