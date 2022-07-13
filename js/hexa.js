@@ -62,6 +62,47 @@ function addText() {
   text_labels.forEach(l => text(l.s, l.t, l.x, l.y, l.a));
 }
 
+function hexX(info) {
+  // hex offset in "sides" for x, given info
+  switch (info.t[1]) {
+    case "a": // fall through
+    case "f":
+      return 0;
+    case "b": // fall through
+    case "e":
+      return 0.5;
+    case "c": // fall through
+    case "d":
+      return 1.0;
+    default:
+      throw new Error("Unexpected value for hx: ", name);
+  }
+}
+
+function hexY(info) {
+  // hex offset in "hts" for y, given info
+  if (info.t[1].charCodeAt() < 100) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
+function stripX(info) {
+  // strip offset in "sides" for x, given info
+  return info.x - 0.5; // info.x is the centrepoint
+}
+
+function stripY(info) {
+  // strip offset in "sides" for y, given info
+  if (info.y < 1) {
+    // info.y is the centrepoint
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
 function line(strip, x1, y1, x2, y2) {
   strip.appendChild(
     svg("line", {
@@ -107,34 +148,42 @@ function triClip(num, p1, p2, p3) {
   );
 }
 
+function triangleIndex(info) {
+  // convert letter in name to number. a = 1, b = 2, etc.
+  return info.t.charCodeAt(1) - 96;
+}
+
+function imageIndex(info) {
+  // convert number in name to number
+  return parseInt(info.t[0], 10);
+}
+
 // copy triangle from hex to strip
-function useHex(strip, img, dx, dy, id) {
-  // should include rotation and midpoint of triangle in strip
-  strip.appendChild(
+function useHex(info) {
+  info.s.appendChild(
     svg("use", {
-      href: `#hextri${img}_${id}`,
-      x: side * dx,
-      y: ht * dy,
+      href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
+      x: side * (stripX(info) - hexX(info)),
+      y: ht * (stripY(info) - hexY(info)),
+      // transform: info.a ? `rotate(${info.a}, ${info.x}, ${info.y})` : "",
     })
   );
 }
 
-function use(num) {
-  for (let img = 1; img < 7; img++) {
-    // use the image from defs and clip with the triangles from defs.
-    hex.appendChild(
-      svg("use", {
-        href: `#image${img}`,
-        id: `hextri${img}_${num}`,
-        "clip-path": `url(#tri${num})`,
-      })
-    );
-  }
-}
-
 function draw_hex() {
-  for (let n = 1; n < 7; n++) {
-    use(n);
+  for (let img = 1; img < 7; img++) {
+    let g = svg("g", { transform: `translate(${(img - 1) * 350}, 0)` });
+    for (let tri = 1; tri < 7; tri++) {
+      // use the image from defs and clip with the triangles from defs.
+      g.appendChild(
+        svg("use", {
+          href: `#image${img}`,
+          id: `hextri${img}_${tri}`,
+          "clip-path": `url(#tri${tri})`,
+        })
+      );
+    }
+    hex.appendChild(g);
   }
 }
 
@@ -209,27 +258,6 @@ class Image {
   }
 }
 
-// class Hex {
-//   static lastIndex = 0;
-//   constructor(image, triangleMappings) {
-//     this.index = ++this.constructor.lastIndex;
-//     this.scale = 1.0;
-//     this.pan = { x: 0, y: 0 };
-//     this.rotated = false;
-//     this.triangleMappings = triangleMappings;
-//     this.image = image;
-//     this.originalWidth = image.width;
-//     this.originalHeight = image.height;
-//   }
-//   draw() {
-//     // replaces hex_to_strip()
-//     // called once to setup mapping
-//     this.triangleMappings.forEach((m, idx) => {
-//       useHex(m.x, m.y, idx);
-//     });
-//   }
-// }
-
 const images = [
   new Image("#image1"),
   new Image("#image2"),
@@ -241,10 +269,10 @@ const images = [
 
 let image = images[0];
 
-function chooseImage(evt) {
-  let idx = parseInt(evt.target.value, 10) - 1; // target values are 1-based
+function chooseImage() {
+  let idx = parseInt($("input[type=radio]:checked").value, 10) - 1; // target values are 1-based
   image = images[idx];
-  hex.viewBox.baseVal.x = -350 * idx;
+  hex.viewBox.baseVal.x = 350 * idx;
 }
 
 function subscribe_events() {
@@ -258,18 +286,10 @@ function subscribe_events() {
 }
 
 function hex_to_strip() {
-  // multiplier for x, multiplier for y, id
-  // useHex(strip, image, dx, dy, hexTriangle
-  // NOTE: currently you have to add the offset for top/left position in strip, but *subtract*
-  // the offset of the triangle in the hexagon. Normalize from hex first
-  useHex(strip1, 1, 0.5, 0, 1);
-  useHex(strip1, 1, 1.5, 0, 2);
-  useHex(strip1, 1, 2.5, 0, 3);
-  useHex(strip1, 1, 4, -1, 4);
-  useHex(strip2, 1, 1, -1, 5);
-  useHex(strip2, 1, 3, -1, 6);
-  // next
-  // useHex(2, 0.5, 0, 1);
+  // text_labels.forEach(useHex);
+  for (let i = 6; i < 12; i++) {
+    useHex(text_labels[i]);
+  }
 }
 
 drawLines();
@@ -278,5 +298,6 @@ prepDefs();
 draw_hex();
 subscribe_events();
 hex_to_strip();
+chooseImage();
 
 console.log("done");
