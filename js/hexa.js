@@ -158,18 +158,6 @@ function imageIndex(info) {
   return parseInt(info.t[0], 10);
 }
 
-// copy triangle from hex to strip
-function useHex(info) {
-  info.s.appendChild(
-    svg("use", {
-      href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
-      x: side * (stripX(info) - hexX(info)),
-      y: ht * (stripY(info) - hexY(info)),
-      // transform: info.a ? `rotate(${info.a}, ${info.x}, ${info.y})` : "",
-    })
-  );
-}
-
 function draw_hex() {
   for (let img = 1; img < 7; img++) {
     let g = svg("g", { transform: `translate(${(img - 1) * 350}, 0)` });
@@ -285,9 +273,47 @@ function subscribe_events() {
   listen("input[type=radio]", "input", chooseImage);
 }
 
+function rotY(info) {
+  if (imageIndex(info) % 2) {
+    return info.y;
+  }
+  let val = info.y;
+  if (info.y > 1) {
+    val -= 1;
+  }
+  if (val < 0.5) {
+    val = 0.66;
+  } else {
+    val = 0.33;
+  }
+  if (info.y > 1) {
+    val += 1;
+  }
+  return val;
+}
+
+function rot(info) {
+  if (info.a === 0) {
+    return "";
+  }
+  return `rotate(${info.a}, ${info.x * side}, ${rotY(info) * ht})`;
+}
+
+// copy triangle from hex to strip
+function useHex(info) {
+  info.s.appendChild(
+    svg("use", {
+      href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
+      x: side * (stripX(info) - hexX(info)),
+      y: ht * (stripY(info) - hexY(info)),
+      transform: rot(info),
+    })
+  );
+}
+
 function hex_to_strip() {
   // text_labels.forEach(useHex);
-  for (let i = 6; i < 12; i++) {
+  for (let i = 30; i < 36; i++) {
     useHex(text_labels[i]);
   }
 }
