@@ -274,7 +274,7 @@ function subscribe_events() {
 }
 
 function rotY(info) {
-  if (imageIndex(info) % 2) {
+  if (imageIndex(info) === 1 || imageIndex(info) === 3) {
     return info.y;
   }
   let val = info.y;
@@ -296,26 +296,58 @@ function rot(info) {
   if (info.a === 0) {
     return "";
   }
-  return `rotate(${info.a}, ${info.x * side}, ${rotY(info) * ht})`;
+  // return `rotate(${info.a} ${info.x * side} ${(info.y > 1 ? 1.5 : 0.5) * ht})`;
+  // return `rotate(${info.a} ${info.x * side} ${info.y * ht})`;
+  // return `rotate(${info.a} ${info.x * side} ${rotY(info) * ht})`;
+  // return `rotate(180, ${info.x * side}, ${(info.y > 1 ? 1.5 : 0.5) * ht})`;
+  // return `rotate(180, ${info.x * side}, ${
+  //   (info.y > 1 ? 1.5 : 0.5) * ht
+  // }) rotate(${info.a - 180} ${info.x * side} ${info.y * ht})`;
+  if (imageIndex(info) === 1 || imageIndex(info) === 3) {
+    return `rotate(${info.a} ${info.x * side} ${rotY(info) * ht})`;
+  } else {
+    return `rotate(180, ${info.x * side}, ${
+      (info.y > 1 ? 1.5 : 0.5) * ht
+    }) rotate(${info.a - 180} ${info.x * side} ${rotY(info) * ht})`;
+  }
 }
 
 // copy triangle from hex to strip
 function useHex(info) {
   info.s.appendChild(
-    svg("use", {
-      href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
-      x: side * (stripX(info) - hexX(info)),
-      y: ht * (stripY(info) - hexY(info)),
-      transform: rot(info),
-    })
+    svg(
+      "use",
+      {
+        href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
+        x: side * (stripX(info) - hexX(info)),
+        y: ht * (stripY(info) - hexY(info)),
+        transform: rot(info),
+      }
+      // svg("animateTransform", {
+      //   attributeName: "transform",
+      //   type: "rotate",
+      //   from: `rotate(0, ${info.x * side}, ${rotY(info) * ht})`,
+      //   to: `rotate(${info.a}, ${info.x * side}, ${rotY(info) * ht})`,
+      //   dur: "10s",
+      //   repeatCount: "indefinite",
+      // })
+    )
   );
+  // info.s.appendChild(
+  //   svg("circle", {
+  //     cx: info.x * side,
+  //     cy: info.y * ht,
+  //     r: 2,
+  //     fill: "red",
+  //   })
+  // );
 }
 
 function hex_to_strip() {
-  // text_labels.forEach(useHex);
-  for (let i = 30; i < 36; i++) {
-    useHex(text_labels[i]);
-  }
+  text_labels.forEach(useHex);
+  // for (let i = 24; i < 30; i++) {
+  //   useHex(text_labels[i]);
+  // }
 }
 
 drawLines();
