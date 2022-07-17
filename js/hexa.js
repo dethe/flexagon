@@ -6,7 +6,7 @@ const ht = 149; // height of triangle, 108.2531...
 const strip1 = $("#strip1");
 const strip2 = $("#strip2");
 const hex = $("#hex");
-const hexDefs = $("defs");
+let hexDefs;
 
 // hex points
 const p0 = { x: side * 1, y: ht * 1 }; // centre point
@@ -57,6 +57,32 @@ const text_labels = [
   { t: "6e", s: strip2, a: -60, x: 2, y: 1.33 },
   { t: "6f", s: strip2, a: -60, x: 1.5, y: 1.66 },
 ];
+
+function defaultImage(idx) {
+  let img = svg("image", {
+    href: `images/kaleidoscope${idx}.png`,
+  });
+  img.decode().then(() => renderImage(img, idx));
+  return img;
+}
+
+function renderImage(img, idx) {
+  images[idx] = new HexImage(img);
+  images[idx].center();
+  if ((currImageIdx = idx)) {
+    image = images[idx];
+  }
+  let oldImg = $(`#image${idx}`);
+  if (oldImg) {
+    oldImg.remove();
+  }
+  img.id = `image${idx}`;
+}
+
+function addHexDefs() {
+  hexDefs = svg("defs", {}, [1, 2, 3, 4, 5, 6].map(defaultImage));
+  strip1.appendChild(hexDefs);
+}
 
 function addText() {
   text_labels.forEach(l => text(l.s, l.t, l.x, l.y, l.a));
@@ -176,6 +202,7 @@ function draw_hex() {
 }
 
 function prepDefs() {
+  addHexDefs();
   triClip(1, p1, p2, p0);
   triClip(2, p2, p3, p0);
   triClip(3, p3, p4, p0);
@@ -213,14 +240,29 @@ function drawLines() {
   line(strip2, 0, 2, 4, 2);
 }
 
-class Image {
-  constructor(sel, scale, x, y) {
-    this.image = $(sel);
-    this.originalWidth = this.image.width;
-    this.originalHeight = this.image.height;
-    this._scale = scale || 1;
-    this._x = x || 0;
-    this._y = y || 0;
+class HexImage {
+  constructor(img) {
+    this.image = img;
+    this.originalWidth = this.image.width.baseVal.value;
+    this.originalHeight = this.image.height.baseVal.value;
+    this._scale = 1;
+    this._x = 0;
+    this._y = 0;
+  }
+  center() {
+    // scale and position image
+    let w = this.image.width.baseVal.value;
+    let h = this.image.height.baseVal.value;
+    if (Math.min(w, h) < 1) {
+      console.log(`Why doesn't this image have height/width? (${w},${h})`);
+    }
+    this.scale = 350 / Math.min(w, h);
+    if (w > 350) {
+      this.image.x = -(w - 350) / 2;
+    }
+    if (h > 300) {
+      this.image.y = -(h - 300) / 2;
+    }
   }
   get x() {
     return this._x;
@@ -240,25 +282,24 @@ class Image {
     return this._scale;
   }
   set scale(val) {
+    console.log(
+      `scale: ${val} (${typeof val}), originalWidth: ${
+        this.originalWidth
+      } (${typeof this.originalWidth})`
+    );
     this._scale = val;
     this.image.setAttribute("width", this.originalWidth * this._scale);
     this.image.setAttribute("height", this.originalHeight * this._scale);
   }
 }
 
-const images = [
-  new Image("#image1"),
-  new Image("#image2"),
-  new Image("#image3"),
-  new Image("#image4"),
-  new Image("#image5"),
-  new Image("#image6"),
-];
-
-let image = images[0];
+let images = [];
+let image;
+let currImageIdx = 1;
 
 function chooseImage() {
-  let idx = parseInt($("input[type=radio]:checked").value, 10) - 1; // target values are 1-based
+  let idx = parseInt($("input[type=radio]:checked").value, 10); // target values are 1-based
+  currImageIdx = idx;
   image = images[idx];
   hex.viewBox.baseVal.x = 350 * idx;
 }
@@ -356,6 +397,6 @@ prepDefs();
 draw_hex();
 subscribe_events();
 hex_to_strip();
-chooseImage();
+// chooseImage();
 
 console.log("done");
