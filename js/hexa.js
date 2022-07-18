@@ -75,6 +75,7 @@ function loadImage(idx, url) {
     });
     image.decode().then(() => renderImage(idx, image));
   });
+  return img;
 }
 
 function renderImage(idx, img) {
@@ -322,14 +323,34 @@ function subscribe_events() {
   $("#hex").addEventListener(
     "wheel",
     evt => {
-      console.log("wheel!");
       evt.preventDefault();
       images[currImageIdx].scale *= evt.deltaY > 0 ? 1.2 : 0.8;
-      return false;
     },
     { passive: false }
   );
+  listen("#hex", "dragstart", () => (dragging = true));
+  listen("drag", evt => {
+    if (!dragging) return;
+    evt.preventDefault();
+    images[currImageIdx].x += evt.movementX;
+    images[currImageIdx].y += evt.movementY;
+  });
+  listen(window, "dragend", () => (dragging = false));
+  listen("#hex", "dragover", evt => evt.preventDefault());
+  listen("#hex", "drop", evt => {
+    if (evt.dataTransfer.files.length === 0) {
+      return;
+    }
+    evt.preventDefault();
+    let img = loadImage(
+      currImageIdx,
+      URL.createObjectURL(evt.dataTransfer.files[0])
+    );
+    img.onload = () => URL.revokeObjectURL(img.src);
+  });
 }
+
+let dragging = false;
 
 function rotY(info) {
   if (imageIndex(info) === 1 || imageIndex(info) === 3) {
