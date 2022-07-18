@@ -305,6 +305,28 @@ class HexImage {
 let images = [];
 let image;
 let currImageIdx = 1;
+const video = $("#video");
+const canvas = $("#canvas");
+const ctx = canvas.getContext("2d");
+
+function initializeCamera() {
+  navigator.mediaDevices
+    .getUserMedia({ video: true, audio: false })
+    .then(mediaStream => {
+      video.srcObject = mediaStream;
+      const track = mediaStream.getVideoTracks()[0];
+      console.log("camera ready");
+    })
+    .catch(err => {
+      console.error(err);
+      $("#take-photo").remove();
+    });
+}
+
+function takePhoto() {
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  loadImage(currImageIdx, canvas.toDataURL("image/jpeg"));
+}
 
 function chooseImage() {
   let idx = parseInt($("input[type=radio]:checked").value, 10); // target values are 1-based
@@ -313,41 +335,50 @@ function chooseImage() {
 }
 
 function subscribe_events() {
-  listen("#scale-down", "click", () => (images[currImageIdx].scale *= 0.8));
-  listen("#scale-up", "click", () => (images[currImageIdx].scale *= 1.2));
-  listen("#pan-right", "click", () => (images[currImageIdx].x += 10));
-  listen("#pan-left", "click", () => (images[currImageIdx].x -= 10));
-  listen("#pan-up", "click", () => (images[currImageIdx].y -= 10));
-  listen("#pan-down", "click", () => (images[currImageIdx].y += 10));
   listen("input[type=radio]", "input", chooseImage);
-  $("#hex").addEventListener(
-    "wheel",
-    evt => {
-      evt.preventDefault();
-      images[currImageIdx].scale *= evt.deltaY > 0 ? 1.2 : 0.8;
-    },
-    { passive: false }
-  );
-  listen("#hex", "dragstart", () => (dragging = true));
-  listen("drag", evt => {
-    if (!dragging) return;
+  $("#hex").addEventListener("wheel", scrollToZoom, { passive: false });
+  listen("#hex", "mousedown", evt => {
     evt.preventDefault();
-    images[currImageIdx].x += evt.movementX;
-    images[currImageIdx].y += evt.movementY;
+    dragging = true;
   });
-  listen(window, "dragend", () => (dragging = false));
+  listen(document, "mousemove", dragToPan);
+  listen(window, "mouseup", () => (dragging = false));
   listen("#hex", "dragover", evt => evt.preventDefault());
-  listen("#hex", "drop", evt => {
-    if (evt.dataTransfer.files.length === 0) {
-      return;
-    }
-    evt.preventDefault();
-    let img = loadImage(
-      currImageIdx,
-      URL.createObjectURL(evt.dataTransfer.files[0])
-    );
-    img.onload = () => URL.revokeObjectURL(img.src);
-  });
+  listen("#hex", "drop", dropFile);
+  listen("#take-photo", "click", takePhoto);
+  listen("#filepicker", "change", loadFile);
+}
+
+function scrollToZoom(evt) {
+  evt.preventDefault();
+  images[currImageIdx].scale *= evt.deltaY > 0 ? 1.2 : 0.8;
+}
+
+function dragToPan(evt) {
+  if (!dragging) return;
+  evt.preventDefault();
+  images[currImageIdx].x += evt.movementX;
+  images[currImageIdx].y += evt.movementY;
+}
+
+function loadFile(evt) {
+  if (!evt.target.files.length) {
+    return;
+  }
+  let img = loadImage(currImageIdx, URL.createObjectURL(evt.target.files[0]));
+  img.onload = () => URL.revokeObjectURL(img.src);
+}
+
+function dropFile(evt) {
+  if (evt.dataTransfer.files.length === 0) {
+    return;
+  }
+  evt.preventDefault();
+  let img = loadImage(
+    currImageIdx,
+    URL.createObjectURL(evt.dataTransfer.files[0])
+  );
+  img.onload = () => URL.revokeObjectURL(img.src);
 }
 
 let dragging = false;
@@ -407,5 +438,6 @@ subscribe_events();
 hex_to_strip();
 drawLines();
 chooseImage();
+initializeCamera();
 
 console.log("done");
