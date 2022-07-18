@@ -59,29 +59,39 @@ const text_labels = [
 ];
 
 function defaultImage(idx) {
-  let img = svg("image", {
-    href: `images/kaleidoscope${idx}.png`,
-  });
-  img.decode().then(() => renderImage(img, idx));
-  return img;
+  loadImage(idx, `images/kaleidoscope${idx}.png`);
 }
 
-function renderImage(img, idx) {
+function loadImage(idx, url) {
+  let img = new Image();
+  img.src = url;
+  img.decode().then(() => {
+    let image = svg("image", {
+      href: url,
+      width: img.naturalWidth,
+      height: img.naturalHeight,
+      x: 0,
+      y: 0,
+    });
+    image.decode().then(() => renderImage(idx, image));
+  });
+}
+
+function renderImage(idx, img) {
   images[idx] = new HexImage(img);
   images[idx].center();
-  if ((currImageIdx = idx)) {
-    image = images[idx];
-  }
   let oldImg = $(`#image${idx}`);
   if (oldImg) {
     oldImg.remove();
   }
   img.id = `image${idx}`;
+  hexDefs.appendChild(img);
 }
 
 function addHexDefs() {
-  hexDefs = svg("defs", {}, [1, 2, 3, 4, 5, 6].map(defaultImage));
+  hexDefs = svg("defs");
   strip1.appendChild(hexDefs);
+  [1, 2, 3, 4, 5, 6].forEach(defaultImage);
 }
 
 function addText() {
@@ -246,50 +256,48 @@ class HexImage {
     this.originalWidth = this.image.width.baseVal.value;
     this.originalHeight = this.image.height.baseVal.value;
     this._scale = 1;
-    this._x = 0;
-    this._y = 0;
   }
   center() {
     // scale and position image
-    let w = this.image.width.baseVal.value;
-    let h = this.image.height.baseVal.value;
-    if (Math.min(w, h) < 1) {
-      console.log(`Why doesn't this image have height/width? (${w},${h})`);
+    this.scale = 350 / Math.min(this.width, this.height);
+    if (this.width > 350) {
+      this.x = -(this.width - 350) / 2;
     }
-    this.scale = 350 / Math.min(w, h);
-    if (w > 350) {
-      this.image.x = -(w - 350) / 2;
-    }
-    if (h > 300) {
-      this.image.y = -(h - 300) / 2;
+    if (this.height > 300) {
+      this.y = -(this.height - 300) / 2;
     }
   }
   get x() {
-    return this._x;
+    return Number(this.image.getAttribute("x"));
   }
   set x(val) {
-    this._x = val;
-    this.image.setAttribute("x", this._x);
+    this.image.setAttribute("x", val);
   }
   get y() {
-    return this._y;
+    return Number(this.image.getAttribute("y"));
   }
   set y(val) {
-    this._y = val;
-    this.image.setAttribute("y", this._y);
+    this.image.setAttribute("y", val);
+  }
+  get width() {
+    return Number(this.image.getAttribute("width"));
+  }
+  set width(val) {
+    this.image.setAttribute("width", val);
+  }
+  get height() {
+    return Number(this.image.getAttribute("height"));
+  }
+  set height(val) {
+    this.image.setAttribute("height", val);
   }
   get scale() {
     return this._scale;
   }
   set scale(val) {
-    console.log(
-      `scale: ${val} (${typeof val}), originalWidth: ${
-        this.originalWidth
-      } (${typeof this.originalWidth})`
-    );
     this._scale = val;
-    this.image.setAttribute("width", this.originalWidth * this._scale);
-    this.image.setAttribute("height", this.originalHeight * this._scale);
+    this.width = this.originalWidth * this.scale;
+    this.height = this.originalHeight * this.scale;
   }
 }
 
@@ -300,18 +308,27 @@ let currImageIdx = 1;
 function chooseImage() {
   let idx = parseInt($("input[type=radio]:checked").value, 10); // target values are 1-based
   currImageIdx = idx;
-  image = images[idx];
-  hex.viewBox.baseVal.x = 350 * idx;
+  hex.viewBox.baseVal.x = 350 * (idx - 1);
 }
 
 function subscribe_events() {
-  listen("#scale-down", "click", () => (image.scale *= 0.8));
-  listen("#scale-up", "click", () => (image.scale *= 1.2));
-  listen("#pan-right", "click", () => (image.x += 10));
-  listen("#pan-left", "click", () => (image.x -= 10));
-  listen("#pan-up", "click", () => (image.y -= 10));
-  listen("#pan-down", "click", () => (image.y += 10));
+  listen("#scale-down", "click", () => (images[currImageIdx].scale *= 0.8));
+  listen("#scale-up", "click", () => (images[currImageIdx].scale *= 1.2));
+  listen("#pan-right", "click", () => (images[currImageIdx].x += 10));
+  listen("#pan-left", "click", () => (images[currImageIdx].x -= 10));
+  listen("#pan-up", "click", () => (images[currImageIdx].y -= 10));
+  listen("#pan-down", "click", () => (images[currImageIdx].y += 10));
   listen("input[type=radio]", "input", chooseImage);
+  $("#hex").addEventListener(
+    "wheel",
+    evt => {
+      console.log("wheel!");
+      evt.preventDefault();
+      images[currImageIdx].scale *= evt.deltaY > 0 ? 1.2 : 0.8;
+      return false;
+    },
+    { passive: false }
+  );
 }
 
 function rotY(info) {
@@ -337,13 +354,6 @@ function rot(info) {
   if (info.a === 0) {
     return "";
   }
-  // return `rotate(${info.a} ${info.x * side} ${(info.y > 1 ? 1.5 : 0.5) * ht})`;
-  // return `rotate(${info.a} ${info.x * side} ${info.y * ht})`;
-  // return `rotate(${info.a} ${info.x * side} ${rotY(info) * ht})`;
-  // return `rotate(180, ${info.x * side}, ${(info.y > 1 ? 1.5 : 0.5) * ht})`;
-  // return `rotate(180, ${info.x * side}, ${
-  //   (info.y > 1 ? 1.5 : 0.5) * ht
-  // }) rotate(${info.a - 180} ${info.x * side} ${info.y * ht})`;
   if (imageIndex(info) === 1 || imageIndex(info) === 3) {
     return `rotate(${info.a} ${info.x * side} ${rotY(info) * ht})`;
   } else {
@@ -356,47 +366,25 @@ function rot(info) {
 // copy triangle from hex to strip
 function useHex(info) {
   info.s.appendChild(
-    svg(
-      "use",
-      {
-        href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
-        x: side * (stripX(info) - hexX(info)),
-        y: ht * (stripY(info) - hexY(info)),
-        transform: rot(info),
-      }
-      // svg("animateTransform", {
-      //   attributeName: "transform",
-      //   type: "rotate",
-      //   from: `rotate(0, ${info.x * side}, ${rotY(info) * ht})`,
-      //   to: `rotate(${info.a}, ${info.x * side}, ${rotY(info) * ht})`,
-      //   dur: "10s",
-      //   repeatCount: "indefinite",
-      // })
-    )
+    svg("use", {
+      href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
+      x: side * (stripX(info) - hexX(info)),
+      y: ht * (stripY(info) - hexY(info)),
+      transform: rot(info),
+    })
   );
-  // info.s.appendChild(
-  //   svg("circle", {
-  //     cx: info.x * side,
-  //     cy: info.y * ht,
-  //     r: 2,
-  //     fill: "red",
-  //   })
-  // );
 }
 
 function hex_to_strip() {
   text_labels.forEach(useHex);
-  // for (let i = 24; i < 30; i++) {
-  //   useHex(text_labels[i]);
-  // }
 }
 
-drawLines();
 addText();
 prepDefs();
 draw_hex();
 subscribe_events();
 hex_to_strip();
-// chooseImage();
+drawLines();
+chooseImage();
 
 console.log("done");

@@ -1,4 +1,5 @@
-* {
+html,
+body {
   margin: 0;
   border: 0;
   padding: 0;
@@ -8,8 +9,32 @@ svg {
   margin-bottom: 2em;
 }
 
+#controls {
+  display: flex;
+}
+
+#controls > * {
+  flex: 1;
+  padding: 2em;
+}
+
+#controls form {
+  display: flex;
+  flex-direction: column;
+}
+
+#controls form > * {
+  padding: 0.2em;
+  margin: 2px;
+}
+
+#hex {
+  flex: 0 0 350px;
+  padding: 2em;
+}
+
 @media print {
   .noprint {
-    display: none;
+    display: none !important;
   }
 }

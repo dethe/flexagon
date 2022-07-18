@@ -12,31 +12,48 @@
     <script src="js/hexa.js" type="module" async defer></script>
   </head>
   <body>
+    <section class="noprint" id="controls">
+      <div>
+        <h1>Hexahexaflexagon Tool</h1>
+        <p>
+          Welcome to the hexahexflexagon tool! If you print this (and cut, fold,
+          and glue according to the instructions), you will get a kind of paper
+          kaleidoscope, but that's just the beginning! You can add your own
+          custom images and use the controls to position them in the hexagon,
+          and make your very own hexahexaflexagon.
+        </p>
+
+        <p>
+          Simply choose the hex, and drag a picture to it (or click to pick a
+          new picture or use the camera). You can scale with the mouse wheel and
+          drag to position.
+        </p>
+
+        <p>
+          You can also save the result to have an SVG file suitable for use with
+          Cricut-style cutting machines.
+        </p>
+      </div>
+      <svg id="hex" width="350" height="300" viewBox="0 0 350 300"></svg>
+      <form>
+        <button type="button" id="scale-down">Scale Down</button>
+        <button type="button" id="scale-up">Scale Up</button>
+        <button type="button" id="pan-right">Pan Right</button>
+        <button type="button" id="pan-left">Pan Left</button>
+        <button type="button" id="pan-up">Pan Up</button>
+        <button type="button" id="pan-down">Pan Down</button>
+        <label
+          ><input type="radio" name="image" value="1" checked /> Image
+          One</label
+        >
+        <label><input type="radio" name="image" value="2" /> Image Two</label>
+        <label><input type="radio" name="image" value="3" /> Image Three</label>
+        <label><input type="radio" name="image" value="4" /> Image Four</label>
+        <label><input type="radio" name="image" value="5" /> Image Five</label>
+        <label><input type="radio" name="image" value="6" /> Image Six</label>
+      </form>
+    </section>
     <svg id="strip1" viewBox="-1 -1 1034 300"></svg>
     <svg id="strip2" viewBox="-1 -1 1034 300"></svg>
-    <svg
-      id="hex"
-      width="350"
-      height="300"
-      viewBox="0 0 350 300"
-      class="noprint"
-    >
-    </svg>
-    <form class="noprint">
-      <button type="button" id="scale-down">Scale Down</button>
-      <button type="button" id="scale-up">Scale Up</button>
-      <button type="button" id="pan-right">Pan Right</button>
-      <button type="button" id="pan-left">Pan Left</button>
-      <button type="button" id="pan-up">Pan Up</button>
-      <button type="button" id="pan-down">Pan Down</button>
-      <label
-        >Image One<input type="radio" name="image" value="1" checked
-      /></label>
-      <label>Image Two<input type="radio" name="image" value="2" /></label>
-      <label>Image Three<input type="radio" name="image" value="3" /></label>
-      <label>Image Four<input type="radio" name="image" value="4" /></label>
-      <label>Image Five<input type="radio" name="image" value="5" /></label>
-      <label>Image Six<input type="radio" name="image" value="6" /></label>
-    </form>
   </body>
 </html>
