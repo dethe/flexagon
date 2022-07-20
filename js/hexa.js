@@ -6,7 +6,7 @@ const ht = 149; // height of triangle, 108.2531...
 const strip1 = $("#strip1");
 const strip2 = $("#strip2");
 const hex = $("#hex");
-const hexDefs = $("defs");
+let hexDefs;
 
 // hex points
 const p0 = { x: side * 1, y: ht * 1 }; // centre point
@@ -57,6 +57,43 @@ const text_labels = [
   { t: "6e", s: strip2, a: -60, x: 2, y: 1.33 },
   { t: "6f", s: strip2, a: -60, x: 1.5, y: 1.66 },
 ];
+
+function defaultImage(idx) {
+  loadImage(idx, `images/kaleidoscope${idx}.png`);
+}
+
+function loadImage(idx, url) {
+  let img = new Image();
+  img.src = url;
+  img.decode().then(() => {
+    let image = svg("image", {
+      href: url,
+      width: img.naturalWidth,
+      height: img.naturalHeight,
+      x: 0,
+      y: 0,
+    });
+    image.decode().then(() => renderImage(idx, image));
+  });
+  return img;
+}
+
+function renderImage(idx, img) {
+  images[idx] = new HexImage(img);
+  images[idx].center();
+  let oldImg = $(`#image${idx}`);
+  if (oldImg) {
+    oldImg.remove();
+  }
+  img.id = `image${idx}`;
+  hexDefs.appendChild(img);
+}
+
+function addHexDefs() {
+  hexDefs = svg("defs");
+  strip1.appendChild(hexDefs);
+  [1, 2, 3, 4, 5, 6].forEach(defaultImage);
+}
 
 function addText() {
   text_labels.forEach(l => text(l.s, l.t, l.x, l.y, l.a));
@@ -176,6 +213,7 @@ function draw_hex() {
 }
 
 function prepDefs() {
+  addHexDefs();
   triClip(1, p1, p2, p0);
   triClip(2, p2, p3, p0);
   triClip(3, p3, p4, p0);
@@ -213,65 +251,137 @@ function drawLines() {
   line(strip2, 0, 2, 4, 2);
 }
 
-class Image {
-  constructor(sel, scale, x, y) {
-    this.image = $(sel);
-    this.originalWidth = this.image.width;
-    this.originalHeight = this.image.height;
-    this._scale = scale || 1;
-    this._x = x || 0;
-    this._y = y || 0;
+class HexImage {
+  constructor(img) {
+    this.image = img;
+    this.originalWidth = this.image.width.baseVal.value;
+    this.originalHeight = this.image.height.baseVal.value;
+    this._scale = 1;
+  }
+  center() {
+    // scale and position image
+    this.scale = 350 / Math.min(this.width, this.height);
+    if (this.width > 350) {
+      this.x = -(this.width - 350) / 2;
+    }
+    if (this.height > 300) {
+      this.y = -(this.height - 300) / 2;
+    }
   }
   get x() {
-    return this._x;
+    return Number(this.image.getAttribute("x"));
   }
   set x(val) {
-    this._x = val;
-    this.image.setAttribute("x", this._x);
+    this.image.setAttribute("x", val);
   }
   get y() {
-    return this._y;
+    return Number(this.image.getAttribute("y"));
   }
   set y(val) {
-    this._y = val;
-    this.image.setAttribute("y", this._y);
+    this.image.setAttribute("y", val);
+  }
+  get width() {
+    return Number(this.image.getAttribute("width"));
+  }
+  set width(val) {
+    this.image.setAttribute("width", val);
+  }
+  get height() {
+    return Number(this.image.getAttribute("height"));
+  }
+  set height(val) {
+    this.image.setAttribute("height", val);
   }
   get scale() {
     return this._scale;
   }
   set scale(val) {
     this._scale = val;
-    this.image.setAttribute("width", this.originalWidth * this._scale);
-    this.image.setAttribute("height", this.originalHeight * this._scale);
+    this.width = this.originalWidth * this.scale;
+    this.height = this.originalHeight * this.scale;
   }
 }
 
-const images = [
-  new Image("#image1"),
-  new Image("#image2"),
-  new Image("#image3"),
-  new Image("#image4"),
-  new Image("#image5"),
-  new Image("#image6"),
-];
+let images = [];
+let image;
+let currImageIdx = 1;
+const video = $("#video");
+const canvas = $("#canvas");
+const ctx = canvas.getContext("2d");
 
-let image = images[0];
+function initializeCamera() {
+  navigator.mediaDevices
+    .getUserMedia({ video: true, audio: false })
+    .then(mediaStream => {
+      video.srcObject = mediaStream;
+      const track = mediaStream.getVideoTracks()[0];
+      console.log("camera ready");
+    })
+    .catch(err => {
+      console.error(err);
+      $("#take-photo").remove();
+    });
+}
+
+function takePhoto() {
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  loadImage(currImageIdx, canvas.toDataURL("image/jpeg"));
+}
 
 function chooseImage() {
-  let idx = parseInt($("input[type=radio]:checked").value, 10) - 1; // target values are 1-based
-  image = images[idx];
-  hex.viewBox.baseVal.x = 350 * idx;
+  let idx = parseInt($("input[type=radio]:checked").value, 10); // target values are 1-based
+  currImageIdx = idx;
+  hex.viewBox.baseVal.x = 350 * (idx - 1);
 }
 
 function subscribe_events() {
-  listen("#scale-down", "click", () => (image.scale *= 0.8));
-  listen("#scale-up", "click", () => (image.scale *= 1.2));
-  listen("#pan-right", "click", () => (image.x += 10));
-  listen("#pan-left", "click", () => (image.x -= 10));
-  listen("#pan-up", "click", () => (image.y -= 10));
-  listen("#pan-down", "click", () => (image.y += 10));
   listen("input[type=radio]", "input", chooseImage);
+  $("#hex").addEventListener("wheel", scrollToZoom, { passive: false });
+  listen("#hex", "mousedown", evt => {
+    evt.preventDefault();
+    dragging = true;
+  });
+  listen(document, "mousemove", dragToPan);
+  listen(window, "mouseup", () => (dragging = false));
+  listen("#hex", "dragover", evt => evt.preventDefault());
+  listen("#hex", "drop", dropFile);
+  listen("#take-photo", "click", takePhoto);
+  listen("#filepicker", "change", loadFile);
 }
+
+function scrollToZoom(evt) {
+  evt.preventDefault();
+  images[currImageIdx].scale *= evt.deltaY > 0 ? 1.2 : 0.8;
+}
+
+function dragToPan(evt) {
+  if (!dragging) return;
+  evt.preventDefault();
+  images[currImageIdx].x += evt.movementX;
+  images[currImageIdx].y += evt.movementY;
+}
+
+function loadFile(evt) {
+  if (!evt.target.files.length) {
+    return;
+  }
+  let img = loadImage(currImageIdx, URL.createObjectURL(evt.target.files[0]));
+  img.onload = () => URL.revokeObjectURL(img.src);
+}
+
+function dropFile(evt) {
+  if (evt.dataTransfer.files.length === 0) {
+    return;
+  }
+  evt.preventDefault();
+  let img = loadImage(
+    currImageIdx,
+    URL.createObjectURL(evt.dataTransfer.files[0])
+  );
+  img.onload = () => URL.revokeObjectURL(img.src);
+}
+
+let dragging = false;
 
 function rotY(info) {
   if (imageIndex(info) === 1 || imageIndex(info) === 3) {
@@ -296,13 +406,6 @@ function rot(info) {
   if (info.a === 0) {
     return "";
   }
-  // return `rotate(${info.a} ${info.x * side} ${(info.y > 1 ? 1.5 : 0.5) * ht})`;
-  // return `rotate(${info.a} ${info.x * side} ${info.y * ht})`;
-  // return `rotate(${info.a} ${info.x * side} ${rotY(info) * ht})`;
-  // return `rotate(180, ${info.x * side}, ${(info.y > 1 ? 1.5 : 0.5) * ht})`;
-  // return `rotate(180, ${info.x * side}, ${
-  //   (info.y > 1 ? 1.5 : 0.5) * ht
-  // }) rotate(${info.a - 180} ${info.x * side} ${info.y * ht})`;
   if (imageIndex(info) === 1 || imageIndex(info) === 3) {
     return `rotate(${info.a} ${info.x * side} ${rotY(info) * ht})`;
   } else {
@@ -315,47 +418,26 @@ function rot(info) {
 // copy triangle from hex to strip
 function useHex(info) {
   info.s.appendChild(
-    svg(
-      "use",
-      {
-        href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
-        x: side * (stripX(info) - hexX(info)),
-        y: ht * (stripY(info) - hexY(info)),
-        transform: rot(info),
-      }
-      // svg("animateTransform", {
-      //   attributeName: "transform",
-      //   type: "rotate",
-      //   from: `rotate(0, ${info.x * side}, ${rotY(info) * ht})`,
-      //   to: `rotate(${info.a}, ${info.x * side}, ${rotY(info) * ht})`,
-      //   dur: "10s",
-      //   repeatCount: "indefinite",
-      // })
-    )
+    svg("use", {
+      href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
+      x: side * (stripX(info) - hexX(info)),
+      y: ht * (stripY(info) - hexY(info)),
+      transform: rot(info),
+    })
   );
-  // info.s.appendChild(
-  //   svg("circle", {
-  //     cx: info.x * side,
-  //     cy: info.y * ht,
-  //     r: 2,
-  //     fill: "red",
-  //   })
-  // );
 }
 
 function hex_to_strip() {
   text_labels.forEach(useHex);
-  // for (let i = 24; i < 30; i++) {
-  //   useHex(text_labels[i]);
-  // }
 }
 
-drawLines();
 addText();
 prepDefs();
 draw_hex();
 subscribe_events();
 hex_to_strip();
+drawLines();
 chooseImage();
+initializeCamera();
 
 console.log("done");
