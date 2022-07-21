@@ -140,14 +140,25 @@ function stripY(info) {
   }
 }
 
-function line(strip, x1, y1, x2, y2) {
+function line(strip, x1, y1, x2, y2, clr) {
   strip.appendChild(
     svg("line", {
       x1: x1 * side,
       y1: y1 * ht,
       x2: x2 * side,
       y2: y2 * ht,
-      stroke: "#CCC",
+      stroke: clr || "#CCC",
+    })
+  );
+}
+
+function dot(strip, x, y, r, clr) {
+  strip.appendChild(
+    svg("circle", {
+      cx: x * side,
+      cy: y * ht,
+      r: r || 3,
+      fill: clr || "#F00",
     })
   );
 }
@@ -222,11 +233,41 @@ function prepDefs() {
   triClip(6, p6, p1, p0);
 }
 
+function tabLine(strip, x1, y1, x2, y2) {
+  let dx = Math.abs(x2 - x1);
+  let dy = Math.abs(y2 - y1);
+  strip1.appendChild(
+    svg("path", {
+      d: `M ${x1 * side} ${y1 * ht}
+        L ${((2 * dx) / 6.0) * side} ${((4 * dy) / 3.0) * ht}
+        a 6 6 90 0 0 6 -6
+        a 6 6 90 0 1 6 -6
+        h 16
+        a 6 6 90 0 1 6 6
+        a 6 6 90 0 0 6 6
+        L ${x2 * side} ${y2 * ht}`,
+      fill: "none",
+      stroke: "#0F0",
+      "stroke-width": 5,
+    })
+  );
+  // line(strip, x1, y1, x1, y2, "#0F0"); // cutting line
+  dot(strip, 2 / 6.0, 4 / 3.0); // first third
+  dot(strip, 0.25, 1.5); // midpoint for B-tab on strip1
+  dot(strip, 1 / 6.0, 5 / 3.0); // second third
+}
+
 function drawLines() {
-  // diagonal lower left to upper right
-  for (let n = 0; n < 6; n++) {
+  tabLine(strip1, 0, 2, 1, 0);
+  // diagonal lower left to upper right (first and last are cutting lines and need tabs)
+  // line(strip1, 0, 2, 1, 0, "#0F0"); // cutting line
+  dot(strip1, 2 / 6.0, 4 / 3.0); // first third
+  dot(strip1, 0.25, 1.5); // midpoint for B-tab on strip1
+  dot(strip1, 1 / 6.0, 5 / 3.0); // second third
+  for (let n = 1; n < 5; n++) {
     line(strip1, n, 2, n + 1, 0);
   }
+  line(strip1, 5, 2, 6, 0, "#00F"); // cutting line
   for (let n = 0; n < 5; n++) {
     line(strip2, n, 2, n + 1, 0);
   }
@@ -243,12 +284,12 @@ function drawLines() {
   }
   line(strip2, 4, 0, 4.5, 1);
   // horizontal lines
-  line(strip1, 1, 0, 6, 0);
+  line(strip1, 1, 0, 6, 0); // cutting line
   line(strip1, 0.5, 1, 5.5, 1);
-  line(strip1, 0, 2, 5, 2);
-  line(strip2, 1, 0, 5, 0);
+  line(strip1, 0, 2, 5, 2); // cutting line
+  line(strip2, 1, 0, 5, 0); // cutting line
   line(strip2, 0.5, 1, 4.5, 1);
-  line(strip2, 0, 2, 4, 2);
+  line(strip2, 0, 2, 4, 2); // cutting line
 }
 
 class HexImage {
@@ -365,8 +406,9 @@ function loadFile(evt) {
   if (!evt.target.files.length) {
     return;
   }
-  let img = loadImage(currImageIdx, URL.createObjectURL(evt.target.files[0]));
-  img.onload = () => URL.revokeObjectURL(img.src);
+  let fileReader = new FileReader();
+  fileReader.onload = evt => loadImage(currImageIdx, fileReader.result);
+  fileReader.readAsDataURL(evt.target.files[0]);
 }
 
 function dropFile(evt) {
@@ -374,11 +416,9 @@ function dropFile(evt) {
     return;
   }
   evt.preventDefault();
-  let img = loadImage(
-    currImageIdx,
-    URL.createObjectURL(evt.dataTransfer.files[0])
-  );
-  img.onload = () => URL.revokeObjectURL(img.src);
+  let fileReader = new FileReader();
+  fileReader.onload = evt => loadImage(currImageIdx, fileReader.result);
+  fileReader.readAsDataURL(evt.dataTransfer.files[0]);
 }
 
 let dragging = false;
