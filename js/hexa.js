@@ -96,7 +96,7 @@ function addHexDefs() {
 }
 
 function addText() {
-  text_labels.forEach(l => text(l.s, l.t, l.x, l.y, l.a));
+  text_labels.forEach(textObj);
 }
 
 function hexX(info) {
@@ -140,17 +140,30 @@ function stripY(info) {
   }
 }
 
-function line(strip, x1, y1, x2, y2) {
+function line(strip, x1, y1, x2, y2, clr) {
   strip.appendChild(
     svg("line", {
       x1: x1 * side,
       y1: y1 * ht,
       x2: x2 * side,
       y2: y2 * ht,
-      stroke: "#CCC",
+      stroke: clr || "#CCC",
     })
   );
 }
+
+function dot(strip, x, y, r, clr) {
+  strip.appendChild(
+    svg("circle", {
+      cx: x * side,
+      cy: y * ht,
+      r: r || 3,
+      fill: clr || "#F00",
+    })
+  );
+}
+
+const textObj = o => text(o.s, o.t, o.x, o.y, o.a);
 
 function text(strip, txt, x, y, rotation) {
   strip.appendChild(
@@ -222,14 +235,46 @@ function prepDefs() {
   triClip(6, p6, p1, p0);
 }
 
+function tabLine(strip, x1, y1, x2, y2) {
+  let dx = Math.abs(x2 - x1);
+  let dy = Math.abs(y2 - y1);
+  strip1.appendChild(
+    svg("path", {
+      d: `M ${x1 * side} ${y1 * ht}
+        L ${((2 * dx) / 6.0) * side} ${((4 * dy) / 3.0) * ht}
+        a 6 6 90 0 0 6 -6
+        a 6 6 90 0 1 6 -6
+        h 16
+        a 6 6 90 0 1 6 6
+        a 6 6 90 0 0 6 6
+        L ${x2 * side} ${y2 * ht}`,
+      fill: "none",
+      stroke: "#0F0",
+      "stroke-width": 5,
+    })
+  );
+  // line(strip, x1, y1, x1, y2, "#0F0"); // cutting line
+  dot(strip, 2 / 6.0, 4 / 3.0); // first third
+  dot(strip, 0.25, 1.5); // midpoint for B-tab on strip1
+  dot(strip, 1 / 6.0, 5 / 3.0); // second third
+}
+
 function drawLines() {
-  // diagonal lower left to upper right
-  for (let n = 0; n < 6; n++) {
+  // tabLine(strip1, 0, 2, 1, 0);
+  // diagonal lower left to upper right (first and last are cutting lines and need tabs)
+  line(strip1, 0, 2, 1, 0, "#00F"); // cutting line
+  // dot(strip1, 2 / 6.0, 4 / 3.0); // first third
+  // dot(strip1, 0.25, 1.5); // midpoint for B-tab on strip1
+  // dot(strip1, 1 / 6.0, 5 / 3.0); // second third
+  for (let n = 1; n < 5; n++) {
     line(strip1, n, 2, n + 1, 0);
   }
-  for (let n = 0; n < 5; n++) {
+  line(strip1, 5, 2, 6, 0, "#00F"); // cutting line
+  line(strip2, 0, 2, 1, 0, "#00F"); // cutting line
+  for (let n = 1; n < 4; n++) {
     line(strip2, n, 2, n + 1, 0);
   }
+  line(strip2, 4, 2, 5, 0, "#00F"); // cutting line
   // diagonal upper left to lower right
   // first and last are half-height
   line(strip1, 0.5, 1, 1, 2);
@@ -243,12 +288,12 @@ function drawLines() {
   }
   line(strip2, 4, 0, 4.5, 1);
   // horizontal lines
-  line(strip1, 1, 0, 6, 0);
+  line(strip1, 1, 0, 6, 0, "#00F"); // cutting line
   line(strip1, 0.5, 1, 5.5, 1);
-  line(strip1, 0, 2, 5, 2);
-  line(strip2, 1, 0, 5, 0);
+  line(strip1, 0, 2, 5, 2, "#00F"); // cutting line
+  line(strip2, 1, 0, 5, 0, "#00F"); // cutting line
   line(strip2, 0.5, 1, 4.5, 1);
-  line(strip2, 0, 2, 4, 2);
+  line(strip2, 0, 2, 4, 2, "#00F"); // cutting line
 }
 
 class HexImage {
@@ -308,14 +353,17 @@ let currImageIdx = 1;
 const video = $("#video");
 const canvas = $("#canvas");
 const ctx = canvas.getContext("2d");
+let cameraInitialized = false;
 
-function initializeCamera() {
+function initializeCamera(callback) {
   navigator.mediaDevices
     .getUserMedia({ video: true, audio: false })
     .then(mediaStream => {
       video.srcObject = mediaStream;
       const track = mediaStream.getVideoTracks()[0];
+      cameraInitialized = true;
       console.log("camera ready");
+      callback();
     })
     .catch(err => {
       console.error(err);
@@ -324,6 +372,10 @@ function initializeCamera() {
 }
 
 function takePhoto() {
+  if (!cameraInitialized){
+    initializeCamera(takePhoto);
+    return;
+  }
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   loadImage(currImageIdx, canvas.toDataURL("image/jpeg"));
 }
@@ -365,8 +417,9 @@ function loadFile(evt) {
   if (!evt.target.files.length) {
     return;
   }
-  let img = loadImage(currImageIdx, URL.createObjectURL(evt.target.files[0]));
-  img.onload = () => URL.revokeObjectURL(img.src);
+  let fileReader = new FileReader();
+  fileReader.onload = evt => loadImage(currImageIdx, fileReader.result);
+  fileReader.readAsDataURL(evt.target.files[0]);
 }
 
 function dropFile(evt) {
@@ -374,11 +427,9 @@ function dropFile(evt) {
     return;
   }
   evt.preventDefault();
-  let img = loadImage(
-    currImageIdx,
-    URL.createObjectURL(evt.dataTransfer.files[0])
-  );
-  img.onload = () => URL.revokeObjectURL(img.src);
+  let fileReader = new FileReader();
+  fileReader.onload = evt => loadImage(currImageIdx, fileReader.result);
+  fileReader.readAsDataURL(evt.dataTransfer.files[0]);
 }
 
 let dragging = false;
@@ -431,13 +482,21 @@ function hex_to_strip() {
   text_labels.forEach(useHex);
 }
 
+function gluingHints() {
+  // Show which triangles get glued together at the end
+  textObj({ t: "B=>", s: strip1, a: 0, x: 0.18, y: 1.25 });
+  textObj({ t: "<=A", s: strip1, a: 0, x: 5.82, y: 0.75 });
+  textObj({ t: "A=>", s: strip2, a: 0, x: 0.18, y: 1.25 });
+  textObj({ t: "<=B", s: strip2, a: 0, x: 4.82, y: 0.75 });
+}
+
 addText();
 prepDefs();
 draw_hex();
 subscribe_events();
 hex_to_strip();
 drawLines();
+gluingHints();
 chooseImage();
-initializeCamera();
 
 console.log("done");
