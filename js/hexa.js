@@ -96,7 +96,7 @@ function addHexDefs() {
 }
 
 function addText() {
-  text_labels.forEach(l => text(l.s, l.t, l.x, l.y, l.a));
+  text_labels.forEach(textObj);
 }
 
 function hexX(info) {
@@ -162,6 +162,8 @@ function dot(strip, x, y, r, clr) {
     })
   );
 }
+
+const textObj = o => text(o.s, o.t, o.x, o.y, o.a);
 
 function text(strip, txt, x, y, rotation) {
   strip.appendChild(
@@ -258,19 +260,21 @@ function tabLine(strip, x1, y1, x2, y2) {
 }
 
 function drawLines() {
-  tabLine(strip1, 0, 2, 1, 0);
+  // tabLine(strip1, 0, 2, 1, 0);
   // diagonal lower left to upper right (first and last are cutting lines and need tabs)
-  // line(strip1, 0, 2, 1, 0, "#0F0"); // cutting line
-  dot(strip1, 2 / 6.0, 4 / 3.0); // first third
-  dot(strip1, 0.25, 1.5); // midpoint for B-tab on strip1
-  dot(strip1, 1 / 6.0, 5 / 3.0); // second third
+  line(strip1, 0, 2, 1, 0, "#00F"); // cutting line
+  // dot(strip1, 2 / 6.0, 4 / 3.0); // first third
+  // dot(strip1, 0.25, 1.5); // midpoint for B-tab on strip1
+  // dot(strip1, 1 / 6.0, 5 / 3.0); // second third
   for (let n = 1; n < 5; n++) {
     line(strip1, n, 2, n + 1, 0);
   }
   line(strip1, 5, 2, 6, 0, "#00F"); // cutting line
-  for (let n = 0; n < 5; n++) {
+  line(strip2, 0, 2, 1, 0, "#00F"); // cutting line
+  for (let n = 1; n < 4; n++) {
     line(strip2, n, 2, n + 1, 0);
   }
+  line(strip2, 4, 2, 5, 0, "#00F"); // cutting line
   // diagonal upper left to lower right
   // first and last are half-height
   line(strip1, 0.5, 1, 1, 2);
@@ -284,12 +288,12 @@ function drawLines() {
   }
   line(strip2, 4, 0, 4.5, 1);
   // horizontal lines
-  line(strip1, 1, 0, 6, 0); // cutting line
+  line(strip1, 1, 0, 6, 0, "#00F"); // cutting line
   line(strip1, 0.5, 1, 5.5, 1);
-  line(strip1, 0, 2, 5, 2); // cutting line
-  line(strip2, 1, 0, 5, 0); // cutting line
+  line(strip1, 0, 2, 5, 2, "#00F"); // cutting line
+  line(strip2, 1, 0, 5, 0, "#00F"); // cutting line
   line(strip2, 0.5, 1, 4.5, 1);
-  line(strip2, 0, 2, 4, 2); // cutting line
+  line(strip2, 0, 2, 4, 2, "#00F"); // cutting line
 }
 
 class HexImage {
@@ -471,12 +475,21 @@ function hex_to_strip() {
   text_labels.forEach(useHex);
 }
 
+function gluingHints() {
+  // Show which triangles get glued together at the end
+  textObj({ t: "B=>", s: strip1, a: 0, x: 0.18, y: 1.25 });
+  textObj({ t: "<=A", s: strip1, a: 0, x: 5.82, y: 0.75 });
+  textObj({ t: "A=>", s: strip2, a: 0, x: 0.18, y: 1.25 });
+  textObj({ t: "<=B", s: strip2, a: 0, x: 4.82, y: 0.75 });
+}
+
 addText();
 prepDefs();
 draw_hex();
 subscribe_events();
 hex_to_strip();
 drawLines();
+gluingHints();
 chooseImage();
 initializeCamera();
 
