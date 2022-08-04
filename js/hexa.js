@@ -353,14 +353,17 @@ let currImageIdx = 1;
 const video = $("#video");
 const canvas = $("#canvas");
 const ctx = canvas.getContext("2d");
+let cameraInitialized = false;
 
-function initializeCamera() {
+function initializeCamera(callback) {
   navigator.mediaDevices
     .getUserMedia({ video: true, audio: false })
     .then(mediaStream => {
       video.srcObject = mediaStream;
       const track = mediaStream.getVideoTracks()[0];
+      cameraInitialized = true;
       console.log("camera ready");
+      callback();
     })
     .catch(err => {
       console.error(err);
@@ -369,6 +372,10 @@ function initializeCamera() {
 }
 
 function takePhoto() {
+  if (!cameraInitialized){
+    initializeCamera(takePhoto);
+    return;
+  }
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   loadImage(currImageIdx, canvas.toDataURL("image/jpeg"));
 }
@@ -491,6 +498,5 @@ hex_to_strip();
 drawLines();
 gluingHints();
 chooseImage();
-initializeCamera();
 
 console.log("done");
