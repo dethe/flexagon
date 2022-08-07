@@ -20,42 +20,42 @@ const p6 = { x: side * 0.5, y: ht * 2 };
 // text and rotations for strips
 // key: t=text, s=strip, a=angle of rotation, x,y centerpoint
 const text_labels = [
-  { t: "1a", s: strip1, a: 120, x: 4, y: 0.66 },
-  { t: "1b", s: strip1, a: 120, x: 2.5, y: 0.33 },
-  { t: "1c", s: strip1, a: 0, x: 1, y: 0.66 },
-  { t: "1d", s: strip2, a: 0, x: 3.5, y: 0.33 },
-  { t: "1e", s: strip2, a: -120, x: 2, y: 0.66 },
-  { t: "1f", s: strip1, a: -120, x: 5.5, y: 0.33 },
-  { t: "2a", s: strip1, a: 180, x: 4.5, y: 0.33 },
-  { t: "2b", s: strip1, a: 60, x: 3, y: 0.66 },
-  { t: "2c", s: strip1, a: 60, x: 1.5, y: 0.33 },
-  { t: "2d", s: strip2, a: -60, x: 4, y: 0.66 },
-  { t: "2e", s: strip2, a: -60, x: 2.5, y: 0.33 },
-  { t: "2f", s: strip2, a: 180, x: 1, y: 0.66 },
-  { t: "3a", s: strip1, a: 120, x: 5, y: 0.66 },
-  { t: "3b", s: strip1, a: 120, x: 3.5, y: 0.33 },
-  { t: "3c", s: strip1, a: 0, x: 2, y: 0.66 },
-  { t: "3d", s: strip2, a: 0, x: 4.5, y: 0.33 },
-  { t: "3e", s: strip2, a: -120, x: 3, y: 0.66 },
-  { t: "3f", s: strip2, a: -120, x: 1.5, y: 0.33 },
-  { t: "4a", s: strip1, a: 180, x: 2, y: 1.33 },
-  { t: "4b", s: strip1, a: 180, x: 1.5, y: 1.66 },
-  { t: "4c", s: strip2, a: 60, x: 3, y: 1.33 },
-  { t: "4d", s: strip2, a: 60, x: 2.5, y: 1.66 },
-  { t: "4e", s: strip1, a: -60, x: 5, y: 1.33 },
-  { t: "4f", s: strip1, a: -60, x: 4.5, y: 1.66 },
-  { t: "5a", s: strip1, a: 180, x: 3, y: 1.33 },
-  { t: "5b", s: strip1, a: 180, x: 2.5, y: 1.66 },
-  { t: "5c", s: strip2, a: 60, x: 4, y: 1.33 },
-  { t: "5d", s: strip2, a: 60, x: 3.5, y: 1.66 },
-  { t: "5e", s: strip2, a: -60, x: 1, y: 1.33 },
-  { t: "5f", s: strip2, a: -60, x: 0.5, y: 1.66 },
-  { t: "6a", s: strip1, a: 180, x: 4, y: 1.33 },
-  { t: "6b", s: strip1, a: 180, x: 3.5, y: 1.66 },
-  { t: "6c", s: strip1, a: 60, x: 1, y: 1.33 },
-  { t: "6d", s: strip1, a: 60, x: 0.5, y: 1.66 },
-  { t: "6e", s: strip2, a: -60, x: 2, y: 1.33 },
-  { t: "6f", s: strip2, a: -60, x: 1.5, y: 1.66 },
+  { t: "1a", s: strip1, a: 120, x: 4, y: 1.66 },
+  { t: "1b", s: strip1, a: 120, x: 2.5, y: 1.33 },
+  { t: "1c", s: strip1, a: 0, x: 1, y: 1.66 },
+  { t: "1d", s: strip2, a: 0, x: 3.5, y: 1.33 },
+  { t: "1e", s: strip2, a: -120, x: 2, y: 1.66 },
+  { t: "1f", s: strip1, a: -120, x: 5.5, y: 1.33 },
+  { t: "2a", s: strip1, a: 180, x: 4.5, y: 1.33 },
+  { t: "2b", s: strip1, a: 60, x: 3, y: 1.66 },
+  { t: "2c", s: strip1, a: 60, x: 1.5, y: 1.33 },
+  { t: "2d", s: strip2, a: -60, x: 4, y: 1.66 },
+  { t: "2e", s: strip2, a: -60, x: 2.5, y: 1.33 },
+  { t: "2f", s: strip2, a: 180, x: 1, y: 1.66 },
+  { t: "3a", s: strip1, a: 120, x: 5, y: 1.66 },
+  { t: "3b", s: strip1, a: 120, x: 3.5, y: 1.33 },
+  { t: "3c", s: strip1, a: 0, x: 2, y: 1.66 },
+  { t: "3d", s: strip2, a: 0, x: 4.5, y: 1.33 },
+  { t: "3e", s: strip2, a: -120, x: 3, y: 1.66 },
+  { t: "3f", s: strip2, a: -120, x: 1.5, y: 1.33 },
+  { t: "4a", s: strip1, a: 180, x: 2, y: 0.33 },
+  { t: "4b", s: strip1, a: 180, x: 1.5, y: 0.66 },
+  { t: "4c", s: strip2, a: 60, x: 3, y: 0.33 },
+  { t: "4d", s: strip2, a: 60, x: 2.5, y: 0.66 },
+  { t: "4e", s: strip1, a: -60, x: 5, y: 0.33 },
+  { t: "4f", s: strip1, a: -60, x: 4.5, y: 0.66 },
+  { t: "5a", s: strip1, a: 180, x: 3, y: 0.33 },
+  { t: "5b", s: strip1, a: 180, x: 2.5, y: 0.66 },
+  { t: "5c", s: strip2, a: 60, x: 4, y: 0.33 },
+  { t: "5d", s: strip2, a: 60, x: 3.5, y: 0.66 },
+  { t: "5e", s: strip2, a: -60, x: 1, y: 0.33 },
+  { t: "5f", s: strip2, a: -60, x: 0.5, y: 0.66 },
+  { t: "6a", s: strip1, a: 180, x: 4, y: 0.33 },
+  { t: "6b", s: strip1, a: 180, x: 3.5, y: 0.66 },
+  { t: "6c", s: strip1, a: 60, x: 1, y: 0.33 },
+  { t: "6d", s: strip1, a: 60, x: 0.5, y: 0.66 },
+  { t: "6e", s: strip2, a: -60, x: 2, y: 0.33 },
+  { t: "6f", s: strip2, a: -60, x: 1.5, y: 0.66 },
 ];
 
 function defaultImage(idx) {
@@ -235,65 +235,39 @@ function prepDefs() {
   triClip(6, p6, p1, p0);
 }
 
-function tabLine(strip, x1, y1, x2, y2) {
-  let dx = Math.abs(x2 - x1);
-  let dy = Math.abs(y2 - y1);
-  strip1.appendChild(
-    svg("path", {
-      d: `M ${x1 * side} ${y1 * ht}
-        L ${((2 * dx) / 6.0) * side} ${((4 * dy) / 3.0) * ht}
-        a 6 6 90 0 0 6 -6
-        a 6 6 90 0 1 6 -6
-        h 16
-        a 6 6 90 0 1 6 6
-        a 6 6 90 0 0 6 6
-        L ${x2 * side} ${y2 * ht}`,
-      fill: "none",
-      stroke: "#0F0",
-      "stroke-width": 5,
-    })
-  );
-  // line(strip, x1, y1, x1, y2, "#0F0"); // cutting line
-  dot(strip, 2 / 6.0, 4 / 3.0); // first third
-  dot(strip, 0.25, 1.5); // midpoint for B-tab on strip1
-  dot(strip, 1 / 6.0, 5 / 3.0); // second third
-}
-
 function drawLines() {
-  // tabLine(strip1, 0, 2, 1, 0);
-  // diagonal lower left to upper right (first and last are cutting lines and need tabs)
-  line(strip1, 0, 2, 1, 0, "#00F"); // cutting line
-  // dot(strip1, 2 / 6.0, 4 / 3.0); // first third
-  // dot(strip1, 0.25, 1.5); // midpoint for B-tab on strip1
-  // dot(strip1, 1 / 6.0, 5 / 3.0); // second third
+  // left cutting lines
+  line(strip1, 0, 1, 0.5, 0, "#00F"); // cutting line
+  line(strip1, 0, 1, 0.5, 2, "#00F"); // cutting line
+  // diagonal lower left to upper right
   for (let n = 1; n < 5; n++) {
-    line(strip1, n, 2, n + 1, 0);
+    line(strip1, n - 0.5, 2, n + 0.5, 0);
   }
-  line(strip1, 5, 2, 6, 0, "#00F"); // cutting line
-  line(strip2, 0, 2, 1, 0, "#00F"); // cutting line
   for (let n = 1; n < 4; n++) {
-    line(strip2, n, 2, n + 1, 0);
+    line(strip2, n - 0.5, 2, n + 0.5, 0);
   }
-  line(strip2, 4, 2, 5, 0, "#00F"); // cutting line
+  // right cutting lines
+  line(strip1, 6, 1, 5.5, 0, "#00F"); // cutting line
+  line(strip1, 6, 1, 5.5, 2, "#00F"); // cutting line
+  // left cutting lines
+  line(strip2, 0, 1, 0.5, 0, "#00F"); // cutting line
+  line(strip2, 0, 1, 0.5, 2, "#00F"); // cutting line
+  line(strip2, 5, 1, 4.5, 0, "#00F"); // cutting line
+  line(strip2, 5, 1, 4.5, 2, "#00F"); // cutting line
   // diagonal upper left to lower right
-  // first and last are half-height
-  line(strip1, 0.5, 1, 1, 2);
-  for (let n = 0; n < 4; n++) {
-    line(strip1, n + 1, 0, n + 2, 2);
+  for (let n = 1; n < 6; n++) {
+    line(strip1, n - 0.5, 0, n + 0.5, 2);
   }
-  line(strip1, 5, 0, 5.5, 1);
-  line(strip2, 0.5, 1, 1, 2);
-  for (let n = 0; n < 3; n++) {
-    line(strip2, n + 1, 0, n + 2, 2);
+  for (let n = 1; n < 5; n++) {
+    line(strip2, n - 0.5, 0, n + 0.5, 2);
   }
-  line(strip2, 4, 0, 4.5, 1);
   // horizontal lines
-  line(strip1, 1, 0, 6, 0, "#00F"); // cutting line
-  line(strip1, 0.5, 1, 5.5, 1);
-  line(strip1, 0, 2, 5, 2, "#00F"); // cutting line
-  line(strip2, 1, 0, 5, 0, "#00F"); // cutting line
-  line(strip2, 0.5, 1, 4.5, 1);
-  line(strip2, 0, 2, 4, 2, "#00F"); // cutting line
+  line(strip1, 0.5, 0, 5.5, 0, "#00F"); // cutting line
+  line(strip1, 0, 1, 6, 1);
+  line(strip1, 0.5, 2, 5.5, 2, "#00F"); // cutting line
+  line(strip2, 0.5, 0, 4.5, 0, "#00F"); // cutting line
+  line(strip2, 0, 1, 5, 1);
+  line(strip2, 0.5, 2, 4.5, 2, "#00F"); // cutting line
 }
 
 class HexImage {
@@ -372,7 +346,7 @@ function initializeCamera(callback) {
 }
 
 function takePhoto() {
-  if (!cameraInitialized){
+  if (!cameraInitialized) {
     initializeCamera(takePhoto);
     return;
   }
@@ -484,10 +458,10 @@ function hex_to_strip() {
 
 function gluingHints() {
   // Show which triangles get glued together at the end
-  textObj({ t: "B=>", s: strip1, a: 0, x: 0.18, y: 1.25 });
-  textObj({ t: "<=A", s: strip1, a: 0, x: 5.82, y: 0.75 });
-  textObj({ t: "A=>", s: strip2, a: 0, x: 0.18, y: 1.25 });
-  textObj({ t: "<=B", s: strip2, a: 0, x: 4.82, y: 0.75 });
+  textObj({ t: "B", s: strip1, a: 0, x: 0.5, y: 1.33 });
+  textObj({ t: "A", s: strip1, a: 0, x: 5.5, y: 0.66 });
+  textObj({ t: "A", s: strip2, a: 0, x: 0.5, y: 1.33 });
+  textObj({ t: "B", s: strip2, a: 0, x: 4.5, y: 0.66 });
 }
 
 addText();
