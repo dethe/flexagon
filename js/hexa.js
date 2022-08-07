@@ -20,42 +20,42 @@ const p6 = { x: side * 0.5, y: ht * 2 };
 // text and rotations for strips
 // key: t=text, s=strip, a=angle of rotation, x,y centerpoint
 const text_labels = [
-  { t: "1a", s: strip1, a: 120, x: 4, y: 1.66 },
-  { t: "1b", s: strip1, a: 120, x: 2.5, y: 1.33 },
-  { t: "1c", s: strip1, a: 0, x: 1, y: 1.66 },
-  { t: "1d", s: strip2, a: 0, x: 3.5, y: 1.33 },
-  { t: "1e", s: strip2, a: -120, x: 2, y: 1.66 },
-  { t: "1f", s: strip1, a: -120, x: 5.5, y: 1.33 },
-  { t: "2a", s: strip1, a: 180, x: 4.5, y: 1.33 },
-  { t: "2b", s: strip1, a: 60, x: 3, y: 1.66 },
-  { t: "2c", s: strip1, a: 60, x: 1.5, y: 1.33 },
-  { t: "2d", s: strip2, a: -60, x: 4, y: 1.66 },
-  { t: "2e", s: strip2, a: -60, x: 2.5, y: 1.33 },
-  { t: "2f", s: strip2, a: 180, x: 1, y: 1.66 },
-  { t: "3a", s: strip1, a: 120, x: 5, y: 1.66 },
-  { t: "3b", s: strip1, a: 120, x: 3.5, y: 1.33 },
-  { t: "3c", s: strip1, a: 0, x: 2, y: 1.66 },
-  { t: "3d", s: strip2, a: 0, x: 4.5, y: 1.33 },
-  { t: "3e", s: strip2, a: -120, x: 3, y: 1.66 },
-  { t: "3f", s: strip2, a: -120, x: 1.5, y: 1.33 },
-  { t: "4a", s: strip1, a: 180, x: 2, y: 0.33 },
-  { t: "4b", s: strip1, a: 180, x: 1.5, y: 0.66 },
-  { t: "4c", s: strip2, a: 60, x: 3, y: 0.33 },
-  { t: "4d", s: strip2, a: 60, x: 2.5, y: 0.66 },
-  { t: "4e", s: strip1, a: -60, x: 5, y: 0.33 },
-  { t: "4f", s: strip1, a: -60, x: 4.5, y: 0.66 },
-  { t: "5a", s: strip1, a: 180, x: 3, y: 0.33 },
-  { t: "5b", s: strip1, a: 180, x: 2.5, y: 0.66 },
-  { t: "5c", s: strip2, a: 60, x: 4, y: 0.33 },
-  { t: "5d", s: strip2, a: 60, x: 3.5, y: 0.66 },
-  { t: "5e", s: strip2, a: -60, x: 1, y: 0.33 },
-  { t: "5f", s: strip2, a: -60, x: 0.5, y: 0.66 },
-  { t: "6a", s: strip1, a: 180, x: 4, y: 0.33 },
-  { t: "6b", s: strip1, a: 180, x: 3.5, y: 0.66 },
-  { t: "6c", s: strip1, a: 60, x: 1, y: 0.33 },
-  { t: "6d", s: strip1, a: 60, x: 0.5, y: 0.66 },
-  { t: "6e", s: strip2, a: -60, x: 2, y: 0.33 },
-  { t: "6f", s: strip2, a: -60, x: 1.5, y: 0.66 },
+  { t: "1a", s: strip1, a: 120, x: 3.5, y: 0.66 },
+  { t: "1b", s: strip1, a: 120, x: 2, y: 0.33 },
+  { t: "1c", s: strip1, a: 0, x: 0.5, y: 0.66 },
+  { t: "1d", s: strip2, a: 0, x: 3, y: 0.33 },
+  { t: "1e", s: strip2, a: -120, x: 1.5, y: 0.66 },
+  { t: "1f", s: strip1, a: -120, x: 5, y: 0.33 },
+  { t: "2a", s: strip1, a: 180, x: 4, y: 0.33 },
+  { t: "2b", s: strip1, a: 60, x: 2.5, y: 0.66 },
+  { t: "2c", s: strip1, a: 60, x: 1, y: 0.33 },
+  { t: "2d", s: strip2, a: -60, x: 3.5, y: 0.66 },
+  { t: "2e", s: strip2, a: -60, x: 2, y: 0.33 },
+  { t: "2f", s: strip2, a: 180, x: 0.5, y: 0.66 },
+  { t: "3a", s: strip1, a: 120, x: 4.5, y: 0.66 },
+  { t: "3b", s: strip1, a: 120, x: 3, y: 0.33 },
+  { t: "3c", s: strip1, a: 0, x: 1.5, y: 0.66 },
+  { t: "3d", s: strip2, a: 0, x: 4, y: 0.33 },
+  { t: "3e", s: strip2, a: -120, x: 2.5, y: 0.66 },
+  { t: "3f", s: strip2, a: -120, x: 1, y: 0.33 },
+  { t: "4a", s: strip1, a: 180, x: 1.5, y: 1.33 },
+  { t: "4b", s: strip1, a: 180, x: 1, y: 1.66 },
+  { t: "4c", s: strip2, a: 60, x: 2.5, y: 1.33 },
+  { t: "4d", s: strip2, a: 60, x: 2, y: 1.66 },
+  { t: "4e", s: strip1, a: -60, x: 4.5, y: 1.33 },
+  { t: "4f", s: strip1, a: -60, x: 4, y: 1.66 },
+  { t: "5a", s: strip1, a: 180, x: 2.5, y: 1.33 },
+  { t: "5b", s: strip1, a: 180, x: 2, y: 1.66 },
+  { t: "5c", s: strip2, a: 60, x: 3.5, y: 1.33 },
+  { t: "5d", s: strip2, a: 60, x: 3, y: 1.66 },
+  { t: "5e", s: strip1, a: -60, x: 5.5, y: 1.33 },
+  { t: "5f", s: strip1, a: -60, x: 5, y: 1.66 },
+  { t: "6a", s: strip1, a: 180, x: 3.5, y: 1.33 },
+  { t: "6b", s: strip1, a: 180, x: 3, y: 1.66 },
+  { t: "6c", s: strip2, a: 60, x: 4.5, y: 1.33 },
+  { t: "6d", s: strip2, a: 60, x: 4, y: 1.66 },
+  { t: "6e", s: strip2, a: -60, x: 1.5, y: 1.33 },
+  { t: "6f", s: strip2, a: -60, x: 1, y: 1.66 },
 ];
 
 function defaultImage(idx) {
@@ -152,6 +152,16 @@ function line(strip, x1, y1, x2, y2, clr) {
   );
 }
 
+function path(strip, moves, clr) {
+  strip.appendChild(
+    svg("path", {
+      d: moves.join(" "),
+      stroke: clr || "#CCC",
+      fill: "none",
+    })
+  );
+}
+
 function dot(strip, x, y, r, clr) {
   strip.appendChild(
     svg("circle", {
@@ -235,39 +245,58 @@ function prepDefs() {
   triClip(6, p6, p1, p0);
 }
 
+let lastMoveWasMove = false;
+
+function M(x, y) {
+  lastMoveWasMove = true;
+  return `M${x * side} ${y * ht} `;
+}
+
+function L(x, y) {
+  let returnVal;
+  if (lastMoveWasMove) {
+    returnVal = `L${x * side} ${y * ht} `;
+  } else {
+    returnVal = `${x * side} ${y * ht} `;
+  }
+  lastMoveWasMove = false;
+  return returnVal;
+}
+
+const n4 = [1, 2, 3, 4];
+const n5 = [1, 2, 3, 4, 5];
+
 function drawLines() {
-  // left cutting lines
-  line(strip1, 0, 1, 0.5, 0, "#00F"); // cutting line
-  line(strip1, 0, 1, 0.5, 2, "#00F"); // cutting line
-  // diagonal lower left to upper right
-  for (let n = 1; n < 5; n++) {
-    line(strip1, n - 0.5, 2, n + 0.5, 0);
-  }
-  for (let n = 1; n < 4; n++) {
-    line(strip2, n - 0.5, 2, n + 0.5, 0);
-  }
-  // right cutting lines
-  line(strip1, 6, 1, 5.5, 0, "#00F"); // cutting line
-  line(strip1, 6, 1, 5.5, 2, "#00F"); // cutting line
-  // left cutting lines
-  line(strip2, 0, 1, 0.5, 0, "#00F"); // cutting line
-  line(strip2, 0, 1, 0.5, 2, "#00F"); // cutting line
-  line(strip2, 5, 1, 4.5, 0, "#00F"); // cutting line
-  line(strip2, 5, 1, 4.5, 2, "#00F"); // cutting line
-  // diagonal upper left to lower right
-  for (let n = 1; n < 6; n++) {
-    line(strip1, n - 0.5, 0, n + 0.5, 2);
-  }
-  for (let n = 1; n < 5; n++) {
-    line(strip2, n - 0.5, 0, n + 0.5, 2);
-  }
-  // horizontal lines
-  line(strip1, 0.5, 0, 5.5, 0, "#00F"); // cutting line
-  line(strip1, 0, 1, 6, 1);
-  line(strip1, 0.5, 2, 5.5, 2, "#00F"); // cutting line
-  line(strip2, 0.5, 0, 4.5, 0, "#00F"); // cutting line
-  line(strip2, 0, 1, 5, 1);
-  line(strip2, 0.5, 2, 4.5, 2, "#00F"); // cutting line
+  // cutting lines
+  path(
+    strip1,
+    [M(0.5, 2), L(0, 1), L(0.5, 0), L(5.5, 0), L(6, 1), L(5.5, 2), L(0.5, 2)],
+    "#99C"
+  );
+  path(
+    strip2,
+    [M(0.5, 2), L(0, 1), L(0.5, 0), L(4.5, 0), L(5, 1), L(4.5, 2), L(0.5, 2)],
+    "#99C"
+  );
+  // scoring lines
+  path(
+    strip1,
+    n5
+      .map(n => `${M(n - 0.5, 2)} ${L(n + 0.5, 0)} `)
+      .concat(
+        `${M(0, 1)} ${L(6, 1)} `,
+        n5.map(n => `${M(n - 0.5, 0)} ${L(n + 0.5, 2)}`)
+      )
+  );
+  path(
+    strip2,
+    n4
+      .map(n => `${M(n - 0.5, 2)} ${L(n + 0.5, 0)} `)
+      .concat(
+        `${M(0, 1)} ${L(5, 1)} `,
+        n4.map(n => `${M(n - 0.5, 0)} ${L(n + 0.5, 2)}`)
+      )
+  );
 }
 
 class HexImage {
@@ -460,15 +489,15 @@ function gluingHints() {
   // Show which triangles get glued together at the end
   textObj({ t: "B", s: strip1, a: 0, x: 0.5, y: 1.33 });
   textObj({ t: "A", s: strip1, a: 0, x: 5.5, y: 0.66 });
-  textObj({ t: "A", s: strip2, a: 0, x: 0.5, y: 1.33 });
-  textObj({ t: "B", s: strip2, a: 0, x: 4.5, y: 0.66 });
+  textObj({ t: "a", s: strip2, a: 0, x: 0.5, y: 1.33 });
+  textObj({ t: "b", s: strip2, a: 0, x: 4.5, y: 0.66 });
 }
 
 addText();
 prepDefs();
 draw_hex();
 subscribe_events();
-hex_to_strip();
+// hex_to_strip();
 drawLines();
 gluingHints();
 chooseImage();
