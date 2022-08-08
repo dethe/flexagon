@@ -7,6 +7,20 @@ const strip1 = $("#strip1");
 const strip2 = $("#strip2");
 const hex = $("#hex");
 let hexDefs;
+let lastMoveWasMove = false;
+let dragging = false;
+
+let images = [];
+let image;
+let currImageIdx = 1;
+const video = $("#video");
+const canvas = $("#canvas");
+const ctx = canvas.getContext("2d");
+let cameraInitialized = false;
+
+const n4 = [1, 2, 3, 4];
+const n5 = [1, 2, 3, 4, 5];
+const n6 = [1, 2, 3, 4, 5, 6];
 
 // hex points
 const p0 = { x: side * 1, y: ht * 1 }; // centre point
@@ -66,6 +80,9 @@ function loadImage(idx, url) {
   let img = new Image();
   img.src = url;
   img.decode().then(() => {
+    if (!url.startsWith("data:")) {
+      url = encodeURLForImage(img);
+    }
     let image = svg("image", {
       href: url,
       width: img.naturalWidth,
@@ -76,6 +93,16 @@ function loadImage(idx, url) {
     image.decode().then(() => renderImage(idx, image));
   });
   return img;
+}
+
+function encodeURLForImage(img) {
+  var canvas = document.createElement("canvas");
+  canvas.width = img.width;
+  canvas.height = img.height;
+  // Copy the image contents to the canvas
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  return canvas.toDataURL("image/png");
 }
 
 function renderImage(idx, img) {
@@ -92,7 +119,7 @@ function renderImage(idx, img) {
 function addHexDefs() {
   hexDefs = svg("defs");
   strip1.appendChild(hexDefs);
-  [1, 2, 3, 4, 5, 6].forEach(defaultImage);
+  n6.forEach(defaultImage);
 }
 
 function addText() {
@@ -245,8 +272,6 @@ function prepDefs() {
   triClip(6, p6, p1, p0);
 }
 
-let lastMoveWasMove = false;
-
 function M(x, y) {
   lastMoveWasMove = true;
   return `M${x * side} ${y * ht} `;
@@ -262,9 +287,6 @@ function L(x, y) {
   lastMoveWasMove = false;
   return returnVal;
 }
-
-const n4 = [1, 2, 3, 4];
-const n5 = [1, 2, 3, 4, 5];
 
 function drawLines() {
   // cutting lines
@@ -350,14 +372,6 @@ class HexImage {
   }
 }
 
-let images = [];
-let image;
-let currImageIdx = 1;
-const video = $("#video");
-const canvas = $("#canvas");
-const ctx = canvas.getContext("2d");
-let cameraInitialized = false;
-
 function initializeCamera(callback) {
   navigator.mediaDevices
     .getUserMedia({ video: true, audio: false })
@@ -435,8 +449,6 @@ function dropFile(evt) {
   fileReader.readAsDataURL(evt.dataTransfer.files[0]);
 }
 
-let dragging = false;
-
 function rotY(info) {
   if (imageIndex(info) === 1 || imageIndex(info) === 3) {
     return info.y;
@@ -497,7 +509,7 @@ addText();
 prepDefs();
 draw_hex();
 subscribe_events();
-// hex_to_strip();
+hex_to_strip();
 drawLines();
 gluingHints();
 chooseImage();
