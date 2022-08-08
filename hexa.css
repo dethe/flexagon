@@ -33,6 +33,15 @@ svg {
   padding: 2em;
 }
 
+#download-file {
+  background-color: green;
+  color: white;
+  font-size: 1.2em;
+  padding: 0.5em 0.8em;
+  border-radius: 0.5em;
+  margin-top: 1em;
+}
+
 @media print {
   .noprint {
     display: none !important;
