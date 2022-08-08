@@ -35,23 +35,23 @@ There are several steps and it requires a bit of patience and a fair dose of pre
 
 3. We want the triangles pre-folded, so starting at one end, fold the first triangle back behind the strip (mountain fold). If you used a Cricut, these lines should already be scored to make this easier. Make a good crease, then unfold it and move to the next triangle, folding on the lines separating the triangles, one by one, until every line has been pre-creased. Again, precision is important.
 
-![images/hexahexaflexagon0.png]
+![Wrapping the hexahexaflexagon](images/hexahexaflexagon0.png)
 
 7. With the lower-case **b** side toward you and to the right, lower that end and beginning at the other end, skip the first crease, then fold each remaining crease (mountain fold) behind, so the whole strip wraps up and becomes a shorter strip. Once you have folded all the way to the **b** triangle, which should be folded behind, you should have 10 triangles in the strip.
 
-![images/hexahexaflexagon1.png]
+![Beginning the hexagon folds](images/hexahexaflexagon1.png)
 
 8. Treat the three triangles on the right as the top of the hexagon and fold the remaining strip to the left behind those three triangles along the dashed line.
 
-![images/hexahexaflexagon2.png]
+![Continuing to fold the hexagon](images/hexahexaflexagon2.png)
 
 9. There are now 5 out of 6 triangles in our hexagon. Fold the remainder of the strip at the dashed line behind the hexagon.
 
-![images/hexahexaflexagon3.png]
+![Hexagon nearly complete](images/hexahexaflexagon3.png)
 
 10. Bring the strip you just folded behind to the front, covering the top-rightmost triangle of the hexagon.
 
-![images/hexahexaflexagon4.png]
+![Folding the final triangle](images/hexahexaflexagon4.png)
 
 11. There should be one triangle sticking out of the hexagon. If you flip it over, you should see the **B** and **b** triangles adjacent to each other. Fold the **B** over the **b** and glue them in place. Allow the glue to set.
 
