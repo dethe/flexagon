@@ -409,7 +409,7 @@ function downloadFile() {
   // Save the current hexahexaflexagon as SVG for use with a Cricut
   // 1. Create a namespaced SVG element
   // 2. Copy the SVG of the two strips into the new element
-  // 2.a ? Set x,y for strips
+  // 2.a ? Set x,y,width,height for strips
   let s1 = strip1.cloneNode(true);
   let d = s1.querySelector("defs");
   s1.insertBefore(d, s1.firstChild);
