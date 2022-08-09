@@ -252,6 +252,7 @@ export {
   element,
   html,
   svg,
+  setAttributes,
   listen,
   remove,
   clear,
