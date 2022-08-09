@@ -1,4 +1,4 @@
-import { html, svg, $, $$, listen } from "./dom.js";
+import { html, svg, $, $$, listen, setAttributes } from "./dom.js";
 
 const side = 172; // 10 triangles across 1250 pixels
 const ht = 149; // height of triangle, 108.2531...
@@ -167,17 +167,17 @@ function stripY(info) {
   }
 }
 
-function line(strip, x1, y1, x2, y2, clr) {
-  strip.appendChild(
-    svg("line", {
-      x1: x1 * side,
-      y1: y1 * ht,
-      x2: x2 * side,
-      y2: y2 * ht,
-      stroke: clr || "#CCC",
-    })
-  );
-}
+// function line(strip, x1, y1, x2, y2, clr) {
+//   strip.appendChild(
+//     svg("line", {
+//       x1: x1 * side,
+//       y1: y1 * ht,
+//       x2: x2 * side,
+//       y2: y2 * ht,
+//       stroke: clr || "#CCC",
+//     })
+//   );
+// }
 
 function path(strip, moves, clr) {
   strip.appendChild(
@@ -189,16 +189,16 @@ function path(strip, moves, clr) {
   );
 }
 
-function dot(strip, x, y, r, clr) {
-  strip.appendChild(
-    svg("circle", {
-      cx: x * side,
-      cy: y * ht,
-      r: r || 3,
-      fill: clr || "#F00",
-    })
-  );
-}
+// function dot(strip, x, y, r, clr) {
+//   strip.appendChild(
+//     svg("circle", {
+//       cx: x * side,
+//       cy: y * ht,
+//       r: r || 3,
+//       fill: clr || "#F00",
+//     })
+//   );
+// }
 
 const textObj = o => text(o.s, o.t, o.x, o.y, o.a);
 
@@ -247,7 +247,9 @@ function imageIndex(info) {
 
 function draw_hex() {
   for (let img = 1; img < 7; img++) {
-    let g = svg("g", { transform: `translate(${(img - 1) * 350}, 0)` });
+    let g = svg("g", {
+      transform: `translate(${(img - 1) * 350}, 0)`,
+    });
     for (let tri = 1; tri < 7; tri++) {
       // use the image from defs and clip with the triangles from defs.
       g.appendChild(
@@ -403,6 +405,40 @@ function chooseImage() {
   hex.viewBox.baseVal.x = 350 * (idx - 1);
 }
 
+function downloadFile() {
+  // Save the current hexahexaflexagon as SVG for use with a Cricut
+  // 1. Create a namespaced SVG element
+  // 2. Copy the SVG of the two strips into the new element
+  // 2.a ? Set x,y for strips
+  let s1 = strip1.cloneNode(true);
+  let d = s1.querySelector("defs");
+  s1.insertBefore(d, s1.firstChild);
+  $$("g").forEach(n => d.appendChild(n.cloneNode(true)));
+  let s2 = strip2.cloneNode(true);
+  setAttributes(s1, { x: 0, y: 0, width: 1034, height: 300 });
+  setAttributes(s2, { x: 0, y: 350, width: 1034, height: 300 });
+  let baseSVG = `<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="1034" height="700" viewBox="0 0 1034 700" xmlns="http://www.w3.org/2000/svg" version="1.1">${s1.outerHTML}${s2.outerHTML}</svg>`;
+  // 3. Trigger a download (can borrow code from Shimmy)
+  save(baseSVG);
+}
+
+function save(data) {
+  var reader = new FileReader();
+  reader.onloadend = function () {
+    var a = html("a", {
+      href: reader.result,
+      download: "hexahexaflexagon.svg",
+      target: "_blank",
+    });
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+  reader.readAsDataURL(new Blob([data], { type: "image/svg+xml" }));
+}
+
 function subscribe_events() {
   listen("input[type=radio]", "input", chooseImage);
   $("#hex").addEventListener("wheel", scrollToZoom, { passive: false });
@@ -416,6 +452,7 @@ function subscribe_events() {
   listen("#hex", "drop", dropFile);
   listen("#take-photo", "click", takePhoto);
   listen("#filepicker", "change", loadFile);
+  listen("#download-file", "click", downloadFile);
 }
 
 function scrollToZoom(evt) {
