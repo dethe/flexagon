@@ -1,7 +1,17 @@
 import { html, svg, $, $$, listen, setAttributes } from "./dom.js";
 
-const side = 172; // 10 triangles across 1250 pixels
-const ht = 149; // height of triangle, 108.2531...
+const PAPERWIDTH = 10; // inches, subtracting 1/2" from each side for printer margin
+const SVGWIDTH = PAPERWIDTH * 96; // 960 - SVG uses 96 "pixels" per inch by default
+const PNGWIDTH = PAPERWIDTH * 300; // 3000 -  Use 300 dpi as our best-guess for PNG export
+const PAPERHEIGHT = 7.5; // inches, subtracting 1/2" from each side for printer margin
+const SVGHEIGHT = PAPERHEIGHT * 96; // 720
+const PNGHEIGHT = PAPERHEIGHT * 300; // 2250
+
+const side = SVGWIDTH / 6; // 160
+const ht = (side * Math.sqrt(3)) / 2; // 138.56406460551017
+
+console.log(`side: ${side}`);
+console.log(`ht: ${ht}`);
 
 const strip1 = $("#strip1");
 const strip2 = $("#strip2");
@@ -167,18 +177,6 @@ function stripY(info) {
   }
 }
 
-// function line(strip, x1, y1, x2, y2, clr) {
-//   strip.appendChild(
-//     svg("line", {
-//       x1: x1 * side,
-//       y1: y1 * ht,
-//       x2: x2 * side,
-//       y2: y2 * ht,
-//       stroke: clr || "#CCC",
-//     })
-//   );
-// }
-
 function path(strip, moves, clr) {
   strip.appendChild(
     svg("path", {
@@ -188,17 +186,6 @@ function path(strip, moves, clr) {
     })
   );
 }
-
-// function dot(strip, x, y, r, clr) {
-//   strip.appendChild(
-//     svg("circle", {
-//       cx: x * side,
-//       cy: y * ht,
-//       r: r || 3,
-//       fill: clr || "#F00",
-//     })
-//   );
-// }
 
 const textObj = o => text(o.s, o.t, o.x, o.y, o.a);
 
