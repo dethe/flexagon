@@ -392,6 +392,20 @@ function chooseImage() {
   hex.viewBox.baseVal.x = 350 * (idx - 1);
 }
 
+function downloadFile2(){
+  // create a canvas element
+  let canvas = html("canvas", {width: PNGWIDTH, height: PNGHEIGHT});
+  let ctx = canvas.getContext("2D");
+  // draw the two strips into it, without lines
+  clearStrips();
+  drawImages();
+  ctx.drawImage(strip1, 0, 0, 
+  // convert it to a base-64 encoded URL
+  // use it as an image in a new SVG element
+  // draw the cutting and scoring lines in SVG
+  // save
+}
+
 function downloadFile() {
   // Save the current hexahexaflexagon as SVG for use with a Cricut
   // 1. Create a namespaced SVG element
@@ -529,13 +543,24 @@ function gluingHints() {
   textObj({ t: "b", s: strip2, a: 0, x: 4.5, y: 0.66 });
 }
 
-addText();
-prepDefs();
-draw_hex();
-subscribe_events();
-hex_to_strip();
-drawLines();
-gluingHints();
-chooseImage();
+function clearStrips(){
+  strip1.replaceChildren();
+  strip2.replaceChildren();
+}
+
+function drawAll(){
+  drawImages();
+  drawLines();
+  subscribe_events();
+  chooseImage();
+}
+
+function drawImages(){
+  addText();
+  prepDefs();
+  draw_hex();
+  hex_to_strip();
+  gluingHints();
+}
 
 console.log("done");
