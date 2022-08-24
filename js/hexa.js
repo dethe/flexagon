@@ -1,22 +1,20 @@
 import { html, svg, $, $$, listen, setAttributes } from "./dom.js";
 
+const SVGINCH = 96;
+const PNGINCH = 300;
 const PAPERWIDTH = 10; // inches, subtracting 1/2" from each side for printer margin
-const SVGWIDTH = PAPERWIDTH * 96; // 960 - SVG uses 96 "pixels" per inch by default
-const PNGWIDTH = PAPERWIDTH * 300; // 3000 -  Use 300 dpi as our best-guess for PNG export
-const PAPERHEIGHT = 7.5; // inches, subtracting 1/2" from each side for printer margin
-const SVGHEIGHT = PAPERHEIGHT * 96; // 720
-const PNGHEIGHT = PAPERHEIGHT * 300; // 2250
+const SVGWIDTH = PAPERWIDTH * SVGINCH; // 960 - SVG uses 96 "pixels" per inch by default
+const PNGWIDTH = PAPERWIDTH * PNGINCH; // 3000 -  Use 300 dpi as our best-guess for PNG export
 
 const side = SVGWIDTH / 6; // 160
 const ht = (side * Math.sqrt(3)) / 2; // 138.56406460551017
+const pngHeight = (ht / SVGINCH) * PNGINCH;
+const SVGSTRIPHEIGHT = ht * 2;
+const PNGSTRIPHEIGHT = pngHeight * 2;
+const PAPERHEIGHT = 7.5; // inches, subtracting 1/2" from each side for printer margin
+const SVGFULLHEIGHT = PAPERHEIGHT * SVGINCH; // 720
+const PNGFULLHEIGHT = PAPERHEIGHT * PNGINCH; // 2250
 
-console.log(`side: ${side}`);
-console.log(`ht: ${ht}`);
-
-const strip1 = $("#strip1");
-const strip2 = $("#strip2");
-const hex = $("#hex");
-let hexDefs;
 let lastMoveWasMove = false;
 let dragging = false;
 
@@ -41,52 +39,63 @@ const p4 = { x: side * 2, y: ht * 1 };
 const p5 = { x: side * 1.5, y: ht * 2 };
 const p6 = { x: side * 0.5, y: ht * 2 };
 
+//const YOFF = SVGSTRIPHEIGHT + SVGINCH;
+// instead of using an inch between strips, use ht
+const y1 = 0.33;
+const y2 = 0.66;
+const y3 = 1.33;
+const y4 = 1.66;
+const y5 = 3.33;
+const y6 = 3.66;
+const y7 = 4.33;
+const y8 = 4.66;
+
 // text and rotations for strips
-// key: t=text, s=strip, a=angle of rotation, x,y centerpoint
-const text_labels = [
-  { t: "1a", s: strip1, a: 120, x: 3.5, y: 0.66 },
-  { t: "1b", s: strip1, a: 120, x: 2, y: 0.33 },
-  { t: "1c", s: strip1, a: 0, x: 0.5, y: 0.66 },
-  { t: "1d", s: strip2, a: 0, x: 3, y: 0.33 },
-  { t: "1e", s: strip2, a: -120, x: 1.5, y: 0.66 },
-  { t: "1f", s: strip1, a: -120, x: 5, y: 0.33 },
-  { t: "2a", s: strip1, a: 180, x: 4, y: 0.33 },
-  { t: "2b", s: strip1, a: 60, x: 2.5, y: 0.66 },
-  { t: "2c", s: strip1, a: 60, x: 1, y: 0.33 },
-  { t: "2d", s: strip2, a: -60, x: 3.5, y: 0.66 },
-  { t: "2e", s: strip2, a: -60, x: 2, y: 0.33 },
-  { t: "2f", s: strip2, a: 180, x: 0.5, y: 0.66 },
-  { t: "3a", s: strip1, a: 120, x: 4.5, y: 0.66 },
-  { t: "3b", s: strip1, a: 120, x: 3, y: 0.33 },
-  { t: "3c", s: strip1, a: 0, x: 1.5, y: 0.66 },
-  { t: "3d", s: strip2, a: 0, x: 4, y: 0.33 },
-  { t: "3e", s: strip2, a: -120, x: 2.5, y: 0.66 },
-  { t: "3f", s: strip2, a: -120, x: 1, y: 0.33 },
-  { t: "4a", s: strip1, a: 180, x: 1.5, y: 1.33 },
-  { t: "4b", s: strip1, a: 180, x: 1, y: 1.66 },
-  { t: "4c", s: strip2, a: 60, x: 2.5, y: 1.33 },
-  { t: "4d", s: strip2, a: 60, x: 2, y: 1.66 },
-  { t: "4e", s: strip1, a: -60, x: 4.5, y: 1.33 },
-  { t: "4f", s: strip1, a: -60, x: 4, y: 1.66 },
-  { t: "5a", s: strip1, a: 180, x: 2.5, y: 1.33 },
-  { t: "5b", s: strip1, a: 180, x: 2, y: 1.66 },
-  { t: "5c", s: strip2, a: 60, x: 3.5, y: 1.33 },
-  { t: "5d", s: strip2, a: 60, x: 3, y: 1.66 },
-  { t: "5e", s: strip1, a: -60, x: 5.5, y: 1.33 },
-  { t: "5f", s: strip1, a: -60, x: 5, y: 1.66 },
-  { t: "6a", s: strip1, a: 180, x: 3.5, y: 1.33 },
-  { t: "6b", s: strip1, a: 180, x: 3, y: 1.66 },
-  { t: "6c", s: strip2, a: 60, x: 4.5, y: 1.33 },
-  { t: "6d", s: strip2, a: 60, x: 4, y: 1.66 },
-  { t: "6e", s: strip2, a: -60, x: 1.5, y: 1.33 },
-  { t: "6f", s: strip2, a: -60, x: 1, y: 1.66 },
+// key: t=text, a=angle of rotation, x,y centerpoint
+const textLabels = [
+  { t: "1a", a: 120, x: 3.5, y: y2 },
+  { t: "1b", a: 120, x: 2, y: y1 },
+  { t: "1c", a: 0, x: 0.5, y: y2 },
+  { t: "1d", a: 0, x: 3, y: y5 },
+  { t: "1e", a: -120, x: 1.5, y: y6 },
+  { t: "1f", a: -120, x: 5, y: y1 },
+  { t: "2a", a: 180, x: 4, y: y1 },
+  { t: "2b", a: 60, x: 2.5, y: y2 },
+  { t: "2c", a: 60, x: 1, y: y1 },
+  { t: "2d", a: -60, x: 3.5, y: y6 },
+  { t: "2e", a: -60, x: 2, y: y5 },
+  { t: "2f", a: 180, x: 0.5, y: y6 },
+  { t: "3a", a: 120, x: 4.5, y: y2 },
+  { t: "3b", a: 120, x: 3, y: y1 },
+  { t: "3c", a: 0, x: 1.5, y: y1 },
+  { t: "3d", a: 0, x: 4, y: y5 },
+  { t: "3e", a: -120, x: 2.5, y: y6 },
+  { t: "3f", a: -120, x: 1, y: y5 },
+  { t: "4a", a: 180, x: 1.5, y: y3 },
+  { t: "4b", a: 180, x: 1, y: y4 },
+  { t: "4c", a: 60, x: 2.5, y: y7 },
+  { t: "4d", a: 60, x: 2, y: y8 },
+  { t: "4e", a: -60, x: 4.5, y: y3 },
+  { t: "4f", a: -60, x: 4, y: y4 },
+  { t: "5a", a: 180, x: 2.5, y: y3 },
+  { t: "5b", a: 180, x: 2, y: y4 },
+  { t: "5c", a: 60, x: 3.5, y: y7 },
+  { t: "5d", a: 60, x: 3, y: y8 },
+  { t: "5e", a: -60, x: 5.5, y: y3 },
+  { t: "5f", a: -60, x: 5, y: y4 },
+  { t: "6a", a: 180, x: 3.5, y: y3 },
+  { t: "6b", a: 180, x: 3, y: y4 },
+  { t: "6c", a: 60, x: 4.5, y: y7 },
+  { t: "6d", a: 60, x: 4, y: y8 },
+  { t: "6e", a: -60, x: 1.5, y: y7 },
+  { t: "6f", a: -60, x: 1, y: y8 },
 ];
 
-function defaultImage(idx) {
-  loadImage(idx, `images/kaleidoscope${idx}.png`);
+function defaultImage(hexDefs, idx) {
+  loadImage(hexDefs, idx, `images/kaleidoscope${idx}.png`);
 }
 
-function loadImage(idx, url) {
+function loadImage(hexDefs, idx, url) {
   let img = new Image();
   img.src = url;
   img.decode().then(() => {
@@ -100,7 +109,7 @@ function loadImage(idx, url) {
       x: 0,
       y: 0,
     });
-    image.decode().then(() => renderImage(idx, image));
+    image.decode().then(() => renderImage(hexDefs, idx, image));
   });
   return img;
 }
@@ -115,7 +124,7 @@ function encodeURLForImage(img) {
   return canvas.toDataURL("image/png");
 }
 
-function renderImage(idx, img) {
+function renderImage(hexDefs, idx, img) {
   images[idx] = new HexImage(img);
   images[idx].center();
   let oldImg = $(`#image${idx}`);
@@ -126,14 +135,15 @@ function renderImage(idx, img) {
   hexDefs.appendChild(img);
 }
 
-function addHexDefs() {
-  hexDefs = svg("defs");
-  strip1.appendChild(hexDefs);
-  n6.forEach(defaultImage);
+function addHexDefs(s) {
+  let h = svg("defs");
+  s.appendChild(h);
+  n6.forEach(idx => defaultImage(h, idx));
+  return h;
 }
 
-function addText() {
-  text_labels.forEach(textObj);
+function addText(s) {
+  textLabels.forEach(info => textObj(s, info));
 }
 
 function hexX(info) {
@@ -172,8 +182,12 @@ function stripY(info) {
   if (info.y < 1) {
     // info.y is the centrepoint
     return 0;
-  } else {
+  } else if (info.y < 2) {
     return 1;
+  } else if (info.y < 4) {
+    return 3;
+  } else {
+    return 4;
   }
 }
 
@@ -187,10 +201,10 @@ function path(strip, moves, clr) {
   );
 }
 
-const textObj = o => text(o.s, o.t, o.x, o.y, o.a);
+const textObj = (s, o) => text(s, o.t, o.x, o.y, o.a);
 
-function text(strip, txt, x, y, rotation) {
-  strip.appendChild(
+function text(s, txt, x, y, rotation) {
+  s.appendChild(
     svg(
       "text",
       {
@@ -208,8 +222,8 @@ function text(strip, txt, x, y, rotation) {
   );
 }
 
-function triClip(num, p1, p2, p3) {
-  hexDefs.appendChild(
+function triClip(defs, num, p1, p2, p3) {
+  defs.appendChild(
     svg(
       "clipPath",
       {
@@ -232,7 +246,7 @@ function imageIndex(info) {
   return parseInt(info.t[0], 10);
 }
 
-function draw_hex() {
+function drawHex(h) {
   for (let img = 1; img < 7; img++) {
     let g = svg("g", {
       transform: `translate(${(img - 1) * 350}, 0)`,
@@ -247,66 +261,70 @@ function draw_hex() {
         })
       );
     }
-    hex.appendChild(g);
+    h.appendChild(g);
   }
 }
 
-function prepDefs() {
-  addHexDefs();
-  triClip(1, p1, p2, p0);
-  triClip(2, p2, p3, p0);
-  triClip(3, p3, p4, p0);
-  triClip(4, p4, p5, p0);
-  triClip(5, p5, p6, p0);
-  triClip(6, p6, p1, p0);
+function prepDefs(s) {
+  let defs = addHexDefs(s);
+  triClip(defs, 1, p1, p2, p0);
+  triClip(defs, 2, p2, p3, p0);
+  triClip(defs, 3, p3, p4, p0);
+  triClip(defs, 4, p4, p5, p0);
+  triClip(defs, 5, p5, p6, p0);
+  triClip(defs, 6, p6, p1, p0);
 }
 
-function M(x, y) {
+function M(x, y, yOffP) {
   lastMoveWasMove = true;
-  return `M${x * side} ${y * ht} `;
+  return `M${x * side} ${y * ht + (yOffP ? YOFF : 0)} `;
 }
 
-function L(x, y) {
+function L(x, y, yOffP) {
   let returnVal;
   if (lastMoveWasMove) {
-    returnVal = `L${x * side} ${y * ht} `;
+    returnVal = `L${x * side} ${y * ht + (yOffP ? YOFF : 0)} `;
   } else {
-    returnVal = `${x * side} ${y * ht} `;
+    returnVal = `${x * side} ${y * ht + (yOffP ? YOFF : 0)} `;
   }
   lastMoveWasMove = false;
   return returnVal;
 }
 
-function drawLines() {
+function drawLines(strips) {
   // cutting lines
   path(
-    strip1,
-    [M(0.5, 2), L(0, 1), L(0.5, 0), L(5.5, 0), L(6, 1), L(5.5, 2), L(0.5, 2)],
-    "#99C"
-  );
-  path(
-    strip2,
-    [M(0.5, 2), L(0, 1), L(0.5, 0), L(4.5, 0), L(5, 1), L(4.5, 2), L(0.5, 2)],
-    "#99C"
+    strips,
+    [
+      M(0.5, 2),
+      L(0, 1),
+      L(0.5, 0),
+      L(5.5, 0),
+      L(6, 1),
+      L(5.5, 2),
+      L(0.5, 2),
+      M(0.5, 5),
+      L(0, 4),
+      L(0.5, 3),
+      L(4.5, 3),
+      L(5, 4),
+      L(4.5, 5),
+      L(0.5, 5),
+    ],
+    "#F00"
+    //    "#99C"
   );
   // scoring lines
   path(
-    strip1,
-    n5
-      .map(n => `${M(n - 0.5, 2)} ${L(n + 0.5, 0)} `)
-      .concat(
-        `${M(0, 1)} ${L(6, 1)} `,
-        n5.map(n => `${M(n - 0.5, 0)} ${L(n + 0.5, 2)}`)
-      )
-  );
-  path(
-    strip2,
-    n4
-      .map(n => `${M(n - 0.5, 2)} ${L(n + 0.5, 0)} `)
-      .concat(
-        `${M(0, 1)} ${L(5, 1)} `,
-        n4.map(n => `${M(n - 0.5, 0)} ${L(n + 0.5, 2)}`)
-      )
+    strips,
+    [].concat(
+      n5.map(n => `${M(n - 0.5, 2)} ${L(n + 0.5, 0)} `),
+      `${M(0, 1)} ${L(6, 1)} `,
+      n5.map(n => `${M(n - 0.5, 0)} ${L(n + 0.5, 2)} `),
+      n4.map(n => `${M(n - 0.5, 5)} ${L(n + 0.5, 3)} `),
+      `${M(0, 4)} ${L(5, 4)} `,
+      n4.map(n => `${M(n - 0.5, 3)} ${L(n + 0.5, 5)} `)
+    )
   );
 }
 
@@ -383,7 +401,7 @@ function takePhoto() {
     return;
   }
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  loadImage(currImageIdx, canvas.toDataURL("image/jpeg"));
+  loadImage($("#hex defs"), currImageIdx, canvas.toDataURL("image/jpeg"));
 }
 
 function chooseImage() {
@@ -392,40 +410,54 @@ function chooseImage() {
   hex.viewBox.baseVal.x = 350 * (idx - 1);
 }
 
-function downloadFile2(){
+async function downloadFile() {
   // create a canvas element
-  let canvas = html("canvas", {width: PNGWIDTH, height: PNGHEIGHT});
-  let ctx = canvas.getContext("2D");
-  // draw the two strips into it, without lines
-  clearStrips();
-  drawImages();
-  ctx.drawImage(strip1, 0, 0, 
+  let canvas = html("canvas", { width: PNGWIDTH, height: PNGFULLHEIGHT });
+  let ctx = canvas.getContext("2d");
+  let strips = $("#strips");
+  let s1 = strips.cloneNode(true);
+  let paths = $$("path");
+  paths.forEach(path => path.remove());
+  let svgImage = await inlineSVGToImage(s1);
+  ctx.drawImage(
+    svgImage,
+    0,
+    0,
+    SVGWIDTH,
+    SVGFULLHEIGHT,
+    0,
+    0,
+    PNGWIDTH,
+    PNGFULLHEIGHT
+  );
   // convert it to a base-64 encoded URL
+  let imgURL = canvas.toDataURL();
+  // $("#test").setAttribute("src", imgURL);
   // use it as an image in a new SVG element
   // draw the cutting and scoring lines in SVG
-  // save
-}
-
-function downloadFile() {
-  // Save the current hexahexaflexagon as SVG for use with a Cricut
-  // 1. Create a namespaced SVG element
-  // 2. Copy the SVG of the two strips into the new element
-  // 2.a ? Set x,y,width,height for strips
-  let s1 = strip1.cloneNode(true);
-  let d = s1.querySelector("defs");
-  s1.insertBefore(d, s1.firstChild);
-  $$("g").forEach(n => d.appendChild(n.cloneNode(true)));
-  let s2 = strip2.cloneNode(true);
-  setAttributes(s1, { x: 0, y: 0, width: 1034, height: 300 });
-  setAttributes(s2, { x: 0, y: 350, width: 1034, height: 300 });
   let baseSVG = `<?xml version="1.0" standalone="yes"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="1034" height="700" viewBox="0 0 1034 700" xmlns="http://www.w3.org/2000/svg" version="1.1">${s1.outerHTML}${s2.outerHTML}</svg>`;
-  // 3. Trigger a download (can borrow code from Shimmy)
+<svg width="${SVGWIDTH}" height="${SVGFULLHEIGHT}" viewBox="0 0 ${SVGWIDTH} ${SVGFULLHEIGHT}" xmlns="http://www.w3.org/2000/svg" version="1.1"><image x="0" y="0" width="${SVGWIDTH}" height="${
+    SVGFULLHEIGHT * 2 + 96
+  }" href="${imgURL}"/> ${paths.map(path => path.outerHTML).join("")}</svg>`;
+  // save
   save(baseSVG);
 }
 
+function inlineSVGToImage(svgElement) {
+  return new Promise(resolve => {
+    let svgURL = new XMLSerializer().serializeToString(svgElement);
+    let img = new Image();
+    img.onload = function () {
+      resolve(img);
+    };
+    img.src = "data:image/svg+xml; charset=utf8, " + encodeURIComponent(svgURL);
+    $("#test").src = img.src;
+  });
+}
+
 function save(data) {
+  console.log("saving");
   var reader = new FileReader();
   reader.onloadend = function () {
     var a = html("a", {
@@ -436,11 +468,12 @@ function save(data) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    console.log("should be saved");
   };
   reader.readAsDataURL(new Blob([data], { type: "image/svg+xml" }));
 }
 
-function subscribe_events() {
+function subscribeEvents() {
   listen("input[type=radio]", "input", chooseImage);
   $("#hex").addEventListener("wheel", scrollToZoom, { passive: false });
   listen("#hex", "mousedown", evt => {
@@ -473,7 +506,8 @@ function loadFile(evt) {
     return;
   }
   let fileReader = new FileReader();
-  fileReader.onload = evt => loadImage(currImageIdx, fileReader.result);
+  fileReader.onload = evt =>
+    loadImage($("#hex defs"), currImageIdx, fileReader.result);
   fileReader.readAsDataURL(evt.target.files[0]);
 }
 
@@ -483,11 +517,13 @@ function dropFile(evt) {
   }
   evt.preventDefault();
   let fileReader = new FileReader();
-  fileReader.onload = evt => loadImage(currImageIdx, fileReader.result);
+  fileReader.onload = evt =>
+    loadImage($("#hex defs"), currImageIdx, fileReader.result);
   fileReader.readAsDataURL(evt.dataTransfer.files[0]);
 }
 
 function rotY(info) {
+  // FIXME for drawing all images into one SVG
   if (imageIndex(info) === 1 || imageIndex(info) === 3) {
     return info.y;
   }
@@ -520,8 +556,8 @@ function rot(info) {
 }
 
 // copy triangle from hex to strip
-function useHex(info) {
-  info.s.appendChild(
+function useHex(strips, info) {
+  strips.appendChild(
     svg("use", {
       href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
       x: side * (stripX(info) - hexX(info)),
@@ -531,36 +567,39 @@ function useHex(info) {
   );
 }
 
-function hex_to_strip() {
-  text_labels.forEach(useHex);
+function hexToStrips(strips) {
+  textLabels.forEach(info => useHex(strips, info));
 }
 
-function gluingHints() {
+function gluingHints(strips) {
   // Show which triangles get glued together at the end
-  textObj({ t: "B", s: strip1, a: 0, x: 0.5, y: 1.33 });
-  textObj({ t: "A", s: strip1, a: 0, x: 5.5, y: 0.66 });
-  textObj({ t: "a", s: strip2, a: 0, x: 0.5, y: 1.33 });
-  textObj({ t: "b", s: strip2, a: 0, x: 4.5, y: 0.66 });
+  textObj(strips, { t: "B", a: 0, x: 0.5, y: y3 });
+  textObj(strips, { t: "A", a: 0, x: 5.5, y: y2 });
+  textObj(strips, { t: "a", a: 0, x: 0.5, y: y7 });
+  textObj(strips, { t: "b", a: 0, x: 4.5, y: y6 });
 }
 
-function clearStrips(){
-  strip1.replaceChildren();
-  strip2.replaceChildren();
-}
-
-function drawAll(){
-  drawImages();
-  drawLines();
-  subscribe_events();
+function drawAll() {
+  let hex = $("#hex");
+  let strips = svg("svg", {
+    id: "strips",
+    viewBox: `-1 -1 ${SVGWIDTH} ${SVGFULLHEIGHT}`,
+  });
+  document.body.append(strips);
+  drawImages(strips, hex);
+  drawLines(strips);
+  subscribeEvents();
   chooseImage();
 }
 
-function drawImages(){
-  addText();
-  prepDefs();
-  draw_hex();
-  hex_to_strip();
-  gluingHints();
+function drawImages(strips, hex) {
+  addText(strips);
+  prepDefs(strips);
+  drawHex(hex);
+  hexToStrips(strips);
+  gluingHints(strips);
 }
+
+drawAll();
 
 console.log("done");
