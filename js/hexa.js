@@ -528,18 +528,19 @@ function rotY(info) {
     return info.y;
   }
   let val = info.y;
-  if (info.y > 1) {
-    val -= 1;
-  }
+  val -= Math.floor(info.y); // subtract whole part
+  // flip fractional part
   if (val < 0.5) {
     val = 0.66;
   } else {
     val = 0.33;
   }
-  if (info.y > 1) {
-    val += 1;
-  }
+  val += Math.floor(info.y); // add back in whole part
   return val;
+}
+
+function midY(info) {
+  return Math.floor(info.y) + 0.5;
 }
 
 function rot(info) {
@@ -549,9 +550,9 @@ function rot(info) {
   if (imageIndex(info) === 1 || imageIndex(info) === 3) {
     return `rotate(${info.a} ${info.x * side} ${rotY(info) * ht})`;
   } else {
-    return `rotate(180, ${info.x * side}, ${
-      (info.y > 1 ? 1.5 : 0.5) * ht
-    }) rotate(${info.a - 180} ${info.x * side} ${rotY(info) * ht})`;
+    return `rotate(180, ${info.x * side}, ${midY(info) * ht}) rotate(${
+      info.a - 180
+    } ${info.x * side} ${rotY(info) * ht})`;
   }
 }
 
