@@ -413,12 +413,15 @@ function chooseImage() {
 async function downloadFile() {
   // create a canvas element
   let canvas = html("canvas", { width: PNGWIDTH, height: PNGFULLHEIGHT });
+  // document.body.prepend(canvas);
   let ctx = canvas.getContext("2d");
   let strips = $("#strips");
   let s1 = strips.cloneNode(true);
-  let paths = $$("path");
+  let paths = $$(s1, "path");
   paths.forEach(path => path.remove());
+  console.log("waiting for svg to image");
   let svgImage = await inlineSVGToImage(s1);
+  document.body.prepend(svgImage);
   ctx.drawImage(
     svgImage,
     0,
@@ -437,22 +440,28 @@ async function downloadFile() {
   // draw the cutting and scoring lines in SVG
   let baseSVG = `<?xml version="1.0" standalone="yes"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="${SVGWIDTH}" height="${SVGFULLHEIGHT}" viewBox="0 0 ${SVGWIDTH} ${SVGFULLHEIGHT}" xmlns="http://www.w3.org/2000/svg" version="1.1"><image x="0" y="0" width="${SVGWIDTH}" height="${
+<svg width="${SVGWIDTH}" height="${SVGFULLHEIGHT}" viewBox="0 0 ${SVGWIDTH} ${SVGFULLHEIGHT}" xmlns="http://www.w3.org/2000/svg" version="1.1"><defs>${toXml(
+    $("#hex")
+  )}</defs><image x="0" y="0" width="${SVGWIDTH}" height="${
     SVGFULLHEIGHT * 2 + 96
   }" href="${imgURL}"/> ${paths.map(path => path.outerHTML).join("")}</svg>`;
   // save
   save(baseSVG);
 }
 
+function toXml(element) {
+  return new XMLSerializer().serializeToString(element);
+}
+
 function inlineSVGToImage(svgElement) {
   return new Promise(resolve => {
-    let svgURL = new XMLSerializer().serializeToString(svgElement);
+    let svgURL = toXml(svgElement);
     let img = new Image();
     img.onload = function () {
+      console.log("resolving image: %o", img);
       resolve(img);
     };
-    img.src = "data:image/svg+xml; charset=utf8, " + encodeURIComponent(svgURL);
-    $("#test").src = img.src;
+    img.src = "data:image/svg+xml;charset=utf8, " + encodeURIComponent(svgURL);
   });
 }
 
