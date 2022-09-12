@@ -246,18 +246,23 @@ function imageIndex(info) {
   return parseInt(info.t[0], 10);
 }
 
-function drawHex(h) {
+function drawHex(h, defs) {
   for (let img = 1; img < 7; img++) {
     let g = svg("g", {
       transform: `translate(${(img - 1) * 350}, 0)`,
     });
     for (let tri = 1; tri < 7; tri++) {
       // use the image from defs and clip with the triangles from defs.
-      g.appendChild(
+      defs.appendChild(
         svg("use", {
           href: `#image${img}`,
           id: `hextri${img}_${tri}`,
           "clip-path": `url(#tri${tri})`,
+        })
+      );
+      g.appendChild(
+        svg("use", {
+          href: `#hextri${img}_${tri}`,
         })
       );
     }
@@ -273,6 +278,7 @@ function prepDefs(s) {
   triClip(defs, 4, p4, p5, p0);
   triClip(defs, 5, p5, p6, p0);
   triClip(defs, 6, p6, p1, p0);
+  return defs;
 }
 
 function M(x, y, yOffP) {
@@ -401,7 +407,7 @@ function takePhoto() {
     return;
   }
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  loadImage($("#hex defs"), currImageIdx, canvas.toDataURL("image/jpeg"));
+  loadImage($("#strips defs"), currImageIdx, canvas.toDataURL("image/jpeg"));
 }
 
 function chooseImage() {
@@ -421,7 +427,7 @@ async function downloadFile() {
   paths.forEach(path => path.remove());
   console.log("waiting for svg to image");
   let svgImage = await inlineSVGToImage(s1);
-  document.body.prepend(svgImage);
+  document.body.prepend(svgImage); // FIXME: for testing only
   ctx.drawImage(
     svgImage,
     0,
@@ -440,9 +446,7 @@ async function downloadFile() {
   // draw the cutting and scoring lines in SVG
   let baseSVG = `<?xml version="1.0" standalone="yes"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="${SVGWIDTH}" height="${SVGFULLHEIGHT}" viewBox="0 0 ${SVGWIDTH} ${SVGFULLHEIGHT}" xmlns="http://www.w3.org/2000/svg" version="1.1"><defs>${toXml(
-    $("#hex")
-  )}</defs><image x="0" y="0" width="${SVGWIDTH}" height="${
+<svg width="${SVGWIDTH}" height="${SVGFULLHEIGHT}" viewBox="0 0 ${SVGWIDTH} ${SVGFULLHEIGHT}" xmlns="http://www.w3.org/2000/svg" version="1.1"><image x="0" y="0" width="${SVGWIDTH}" height="${
     SVGFULLHEIGHT * 2 + 96
   }" href="${imgURL}"/> ${paths.map(path => path.outerHTML).join("")}</svg>`;
   // save
@@ -499,6 +503,7 @@ function subscribeEvents() {
 }
 
 function scrollToZoom(evt) {
+  console.log(images[currImageIdx]);
   evt.preventDefault();
   images[currImageIdx].scale *= evt.deltaY > 0 ? 1.2 : 0.8;
 }
@@ -516,7 +521,7 @@ function loadFile(evt) {
   }
   let fileReader = new FileReader();
   fileReader.onload = evt =>
-    loadImage($("#hex defs"), currImageIdx, fileReader.result);
+    loadImage($("#strips defs"), currImageIdx, fileReader.result);
   fileReader.readAsDataURL(evt.target.files[0]);
 }
 
@@ -527,7 +532,7 @@ function dropFile(evt) {
   evt.preventDefault();
   let fileReader = new FileReader();
   fileReader.onload = evt =>
-    loadImage($("#hex defs"), currImageIdx, fileReader.result);
+    loadImage($("#strips defs"), currImageIdx, fileReader.result);
   fileReader.readAsDataURL(evt.dataTransfer.files[0]);
 }
 
@@ -604,8 +609,8 @@ function drawAll() {
 
 function drawImages(strips, hex) {
   addText(strips);
-  prepDefs(strips);
-  drawHex(hex);
+  let defs = prepDefs(strips);
+  drawHex(hex, defs);
   hexToStrips(strips);
   gluingHints(strips);
 }
