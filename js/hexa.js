@@ -416,6 +416,14 @@ function chooseImage() {
   hex.viewBox.baseVal.x = 350 * (idx - 1);
 }
 
+async function wait(millis) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, millis);
+  });
+}
+
 async function downloadFile() {
   // create a canvas element
   let canvas = html("canvas", { width: PNGWIDTH, height: PNGFULLHEIGHT });
@@ -426,8 +434,12 @@ async function downloadFile() {
   let paths = $$(s1, "path");
   paths.forEach(path => path.remove());
   console.log("waiting for svg to image");
+  // ensure all images have fully loaded
+  await Promise.all($$(s1, "image").map(i => i.decode()));
   let svgImage = await inlineSVGToImage(s1);
+  await svgImage.decode();
   document.body.prepend(svgImage); // FIXME: for testing only
+  await wait(5000);
   ctx.drawImage(
     svgImage,
     0,
