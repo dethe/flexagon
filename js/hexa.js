@@ -416,41 +416,69 @@ function chooseImage() {
   hex.viewBox.baseVal.x = 350 * (idx - 1);
 }
 
-async function wait(millis) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve();
-    }, millis);
-  });
+function clippedImage(img, path) {
+  let height = Number(img.getAttribute("height"));
+  let width = Number(img.getAttribute("width"));
+  let x = Number(img.getAttribute("x"));
+  let y = Number(img.getAttribute("y"));
+  let canvas = html("canvas", { width, height });
+  let ctx = canvas.getContext("2d");
+  ctx.beginPath();
+  ctx.moveTo(path[0], path[1]);
+  ctx.lineTo(path[2], path[3]);
+  ctx.lineTo(path[4], path[5]);
+  ctx.closePath();
+  ctx.clip();
+  ctx.drawImage(img, 0, 0, width, height, x, y, width, height);
+  return canvas;
 }
 
 async function downloadFile() {
   // create a canvas element
   let canvas = html("canvas", { width: PNGWIDTH, height: PNGFULLHEIGHT });
-  // document.body.prepend(canvas);
-  let ctx = canvas.getContext("2d");
-  let strips = $("#strips");
-  let s1 = strips.cloneNode(true);
   let paths = $$(s1, "path");
-  paths.forEach(path => path.remove());
-  console.log("waiting for svg to image");
-  // ensure all images have fully loaded
-  await Promise.all($$(s1, "image").map(i => i.decode()));
-  let svgImage = await inlineSVGToImage(s1);
-  await svgImage.decode();
-  document.body.prepend(svgImage); // FIXME: for testing only
-  await wait(5000);
-  ctx.drawImage(
-    svgImage,
-    0,
-    0,
-    SVGWIDTH,
-    SVGFULLHEIGHT,
-    0,
-    0,
-    PNGWIDTH,
-    PNGFULLHEIGHT
-  );
+  let ctx = canvas.getContext("2d");
+  // draw hexes (for testing)
+  for (let i = 1; i < 7; i++) {
+    for (let t = 1; t < 7; t++) {
+      let tri = $(`#hextri${i}_${t}`);
+      let img = $(tri.getAttribute("href"));
+      let clip = $(`${tri.getAttribute("clip-path").slice(4, -1)} > polygon`)
+        .getAttribute("points")
+        .split(" ")
+        .map(Number);
+      let clippedImg = clippedImage(img, clip);
+      let x = (i % 3) * 350;
+      let y = (i % 2) * 350;
+      ctx.drawImage(clippedImg, x, y);
+    }
+  }
+  document.body.prepend(canvas); // FIXME: for testing only
+  // draw strips (for export)
+  // $$("#strips > use").forEach(u => {
+  //   let tri = $(u.getAttribute("href"));
+  //   let img = $(tri.getAttribute("href"));
+  //   let x = Number(u.getAttribute("x"));
+  //   let y = Number(u.getAttribute("y"));
+  //   let width = Number(img.getAttribute("width"));
+  //   let height = Number(img.getAttribute("height"));
+  //   let [tx, ty, tr] = u
+  //     .getAttribute("transform")
+  //     .slice(7, -1)
+  //     .split(" ")
+  //     .map(Number);
+  //   let clip = $(`${tri.getAttribute("clip-path").slice(4, -1)} > polygon`)
+  //     .getAttribute("points")
+  //     .split(" ")
+  //     .map(Number);
+  //   let clippedImg = clippedImage(img, clip);
+  //   ctx.save();
+  //   ctx.translate(-tx, -ty);
+  //   ctx.rotate(tr);
+  //   ctx.translate(tx, ty);
+  //   ctx.drawImage(clippedImg, 0, 0, width, height, x, y, side, ht);
+  //   ctx.restore();
+  // });
   // convert it to a base-64 encoded URL
   let imgURL = canvas.toDataURL();
   // $("#test").setAttribute("src", imgURL);
