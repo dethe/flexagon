@@ -433,12 +433,7 @@ function clippedImage(img, path) {
   return canvas;
 }
 
-async function downloadFile() {
-  // create a canvas element
-  let canvas = html("canvas", { width: PNGWIDTH, height: PNGFULLHEIGHT });
-  let paths = $$(s1, "path");
-  let ctx = canvas.getContext("2d");
-  // draw hexes (for testing)
+function drawHexesCanvas(ctx) {
   for (let i = 1; i < 7; i++) {
     for (let t = 1; t < 7; t++) {
       let tri = $(`#hextri${i}_${t}`);
@@ -453,32 +448,45 @@ async function downloadFile() {
       ctx.drawImage(clippedImg, x, y);
     }
   }
-  document.body.prepend(canvas); // FIXME: for testing only
+}
+
+function drawStripsCanvas(ctx) {
   // draw strips (for export)
-  // $$("#strips > use").forEach(u => {
-  //   let tri = $(u.getAttribute("href"));
-  //   let img = $(tri.getAttribute("href"));
-  //   let x = Number(u.getAttribute("x"));
-  //   let y = Number(u.getAttribute("y"));
-  //   let width = Number(img.getAttribute("width"));
-  //   let height = Number(img.getAttribute("height"));
-  //   let [tx, ty, tr] = u
-  //     .getAttribute("transform")
-  //     .slice(7, -1)
-  //     .split(" ")
-  //     .map(Number);
-  //   let clip = $(`${tri.getAttribute("clip-path").slice(4, -1)} > polygon`)
-  //     .getAttribute("points")
-  //     .split(" ")
-  //     .map(Number);
-  //   let clippedImg = clippedImage(img, clip);
-  //   ctx.save();
-  //   ctx.translate(-tx, -ty);
-  //   ctx.rotate(tr);
-  //   ctx.translate(tx, ty);
-  //   ctx.drawImage(clippedImg, 0, 0, width, height, x, y, side, ht);
-  //   ctx.restore();
-  // });
+  $$("#strips > use").forEach(u => {
+    let tri = $(u.getAttribute("href"));
+    let img = $(tri.getAttribute("href"));
+    let x = Number(u.getAttribute("x"));
+    let y = Number(u.getAttribute("y"));
+    let width = Number(img.getAttribute("width"));
+    let height = Number(img.getAttribute("height"));
+    let [tx, ty, tr] = u
+      .getAttribute("transform")
+      .slice(7, -1)
+      .split(" ")
+      .map(Number);
+    let clip = $(`${tri.getAttribute("clip-path").slice(4, -1)} > polygon`)
+      .getAttribute("points")
+      .split(" ")
+      .map(Number);
+    let clippedImg = clippedImage(img, clip);
+    ctx.save();
+    ctx.translate(-tx, -ty);
+    ctx.rotate(tr);
+    ctx.translate(tx, ty);
+    ctx.drawImage(clippedImg, 0, 0, width, height, x, y, side, ht);
+    ctx.restore();
+  });
+}
+
+function downloadFile() {
+  // create a canvas element
+  let canvas = html("canvas", { width: PNGWIDTH, height: PNGFULLHEIGHT });
+  let paths = $$("#strips > path");
+  let ctx = canvas.getContext("2d");
+  // draw hexes (for testing)
+  drawHexesCanvas(ctx);
+  document.body.prepend(canvas); // FIXME: for testing only
+  // drawStripsCanvas(ctx);
   // convert it to a base-64 encoded URL
   let imgURL = canvas.toDataURL();
   // $("#test").setAttribute("src", imgURL);
