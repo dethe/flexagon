@@ -416,11 +416,13 @@ function chooseImage() {
   hex.viewBox.baseVal.x = 350 * (idx - 1);
 }
 
-function clippedImage(img, path) {
+async function clipImage(img, path, cb) {
   let height = Number(img.getAttribute("height"));
   let width = Number(img.getAttribute("width"));
   let x = Number(img.getAttribute("x"));
   let y = Number(img.getAttribute("y"));
+  let img2 = html("img", { src: img.href.baseVal });
+  await img2.decode();
   let canvas = html("canvas", { width, height });
   let ctx = canvas.getContext("2d");
   ctx.beginPath();
@@ -429,8 +431,8 @@ function clippedImage(img, path) {
   ctx.lineTo(path[4], path[5]);
   ctx.closePath();
   ctx.clip();
-  ctx.drawImage(img, 0, 0, width, height, x, y, width, height);
-  return canvas;
+  ctx.drawImage(img, x, y, width, height);
+  cb(canvas);
 }
 
 function drawHexesCanvas(ctx) {
@@ -442,10 +444,11 @@ function drawHexesCanvas(ctx) {
         .getAttribute("points")
         .split(" ")
         .map(Number);
-      let clippedImg = clippedImage(img, clip);
-      let x = (i % 3) * 350;
-      let y = (i % 2) * 350;
-      ctx.drawImage(clippedImg, x, y);
+      clipImage(img, clip, clippedImg => {
+        let x = (i % 3) * 350;
+        let y = (i % 2) * 350;
+        ctx.drawImage(clippedImg, x, y);
+      });
     }
   }
 }
@@ -468,13 +471,14 @@ function drawStripsCanvas(ctx) {
       .getAttribute("points")
       .split(" ")
       .map(Number);
-    let clippedImg = clippedImage(img, clip);
-    ctx.save();
-    ctx.translate(-tx, -ty);
-    ctx.rotate(tr);
-    ctx.translate(tx, ty);
-    ctx.drawImage(clippedImg, 0, 0, width, height, x, y, side, ht);
-    ctx.restore();
+    clipImage(img, clip, clippedImg => {
+      ctx.save();
+      ctx.translate(-tx, -ty);
+      ctx.rotate(tr);
+      ctx.translate(tx, ty);
+      ctx.drawImage(clippedImg, x,y, side, ht);
+      ctx.restore();
+    });
   });
 }
 
@@ -484,9 +488,9 @@ function downloadFile() {
   let paths = $$("#strips > path");
   let ctx = canvas.getContext("2d");
   // draw hexes (for testing)
-  drawHexesCanvas(ctx);
+  // drawHexesCanvas(ctx);
   document.body.prepend(canvas); // FIXME: for testing only
-  // drawStripsCanvas(ctx);
+  drawStripsCanvas(ctx);
   // convert it to a base-64 encoded URL
   let imgURL = canvas.toDataURL();
   // $("#test").setAttribute("src", imgURL);
@@ -551,7 +555,7 @@ function subscribeEvents() {
 }
 
 function scrollToZoom(evt) {
-  console.log(images[currImageIdx]);
+  // console.log(images[currImageIdx]);
   evt.preventDefault();
   images[currImageIdx].scale *= evt.deltaY > 0 ? 1.2 : 0.8;
 }
