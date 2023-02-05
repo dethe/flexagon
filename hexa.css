@@ -13,6 +13,10 @@ svg {
   display: flex;
 }
 
+[hidden] {
+  display: none;
+}
+
 #controls > * {
   flex: 1;
   padding: 2em;
