@@ -17,6 +17,7 @@ const video = $("#video");
 const canvas = $("#canvas");
 const ctx = canvas.getContext("2d");
 let cameraInitialized = false;
+let optionalText = [[], [], [], [], [], []];
 
 const n4 = [1, 2, 3, 4];
 const n5 = [1, 2, 3, 4, 5];
@@ -403,6 +404,7 @@ function chooseImage() {
   let idx = parseInt($("input[type=radio]:checked").value, 10); // target values are 1-based
   currImageIdx = idx;
   hex.viewBox.baseVal.x = 350 * (idx - 1);
+  restoreOptionalText();
 }
 
 function downloadFile() {
@@ -439,6 +441,20 @@ function save(data) {
   reader.readAsDataURL(new Blob([data], { type: "image/svg+xml" }));
 }
 
+function updateOptionalText(evt) {
+  let currImageText = optionalText[currImageIdx - 1];
+  for (let i = 0; i < 6; i++) {
+    currImageText[i] = document.querySelector(`#text${i + 1}`).value;
+  }
+}
+
+function restoreOptionalText() {
+  let currImageText = optionalText[currImageIdx - 1];
+  for (let i = 0; i < 6; i++) {
+    document.querySelector(`#text${i + 1}`).value = currImageText[i] || "";
+  }
+}
+
 function subscribe_events() {
   listen("input[type=radio]", "input", chooseImage);
   $("#hex").addEventListener("wheel", scrollToZoom, { passive: false });
@@ -453,6 +469,7 @@ function subscribe_events() {
   listen("#take-photo", "click", takePhoto);
   listen("#filepicker", "change", loadFile);
   listen("#download-file", "click", downloadFile);
+  listen("input[type=text]", "input", updateOptionalText);
 }
 
 function scrollToZoom(evt) {
