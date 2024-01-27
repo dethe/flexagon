@@ -2,13 +2,15 @@
 
 ## TODO and where I've left off
 
-* [ ] Add CSS for hide text feature
-* [ ] Text hide text feature
-* [ ] Add CSS for hide images feature
-* [ ] Test hide images feature
-* [ ] Get text from inputs to optional fields around hexagon
-* [ ] Position optional fields properly
+* [x] Add CSS for hide text feature
+* [x] Text hide text feature
+* [x] Add CSS for hide images feature
+* [x] Test hide images feature
+* [x] Get text from inputs to optional fields around hexagon
+* [x] Position optional fields properly
 * [ ] Add CSS for background colour only on text fields that are used
+* [ ] Add SVG shapes for background colour
+* [ ] Switch text input values when switching images/faces
 
 ## A tool to make custom hexahexaflexagons
 
