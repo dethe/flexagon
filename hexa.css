@@ -5,6 +5,18 @@ body {
   padding: 0;
 }
 
+body.hide_images .triangle_image{
+  display: none;
+}
+
+body.hide_text text{
+  display: none;
+}
+
+body.hide_text text.never_hide{
+  display: inline;
+}
+
 #intro {
   padding: 2em;
 }
