@@ -2,6 +2,8 @@ import { html, svg, $, $$, listen, setAttributes } from "./dom.js";
 
 const side = 172; // 10 triangles across 1250 pixels
 const ht = 149; // height of triangle, 108.2531...
+const side_2 = Math.round(side / 2);
+const ht_2 = Math.round(ht / 2);
 
 const strip1 = $("#strip1");
 const strip2 = $("#strip2");
@@ -205,19 +207,23 @@ function path(strip, moves, clr) {
 const textObj = o => text(o.s, o.t, o.x, o.y, o.a, o.a2);
 
 function text(strip, txt, x, y, rotation, textRotation, neverHide) {
+  let _x = x * side;
+  let _y = y * ht;
+  let inset = 8;
+  let _h = 6;
   strip.appendChild(
     svg(
       "text",
       {
-        x: x * side,
-        y: y * ht,
+        x: _x,
+        y: _y,
         fill: "#CCC",
         "text-anchor": "middle",
         "dominant-baseline": "middle",
         "font-size": "2em",
         "font-family": "sans-serif",
         class: neverHide ? "never_hide" : "",
-        transform: `rotate(${rotation}, ${x * side}, ${y * ht})`,
+        transform: `rotate(${rotation}, ${_x}, ${_y})`,
       },
       txt
     )
@@ -226,19 +232,32 @@ function text(strip, txt, x, y, rotation, textRotation, neverHide) {
       return;
   }
   strip.appendChild(
-    svg(
-        "text",
+    svg("g",
         {
-            x: x * side,
-            y: y * ht,
+           transform: `rotate(${textRotation}, ${x * side}, ${y * ht}) translate(0, ${ht / 3.4})`,
+           "class": "on_top",
+        }, [
+        svg(
+          "polygon",
+          {
+            fill: "#fff",
+            points: `${_x - side_2},${_y + _h} ${_x + side_2},${_y + _h} ${_x+(side_2-inset)},${_y-_h} ${_x-(side_2-inset)},${_y-_h}`
+          }
+        ),
+        svg(
+          "text",
+          {
+           x: x * side,
+           y: y * ht,
             fill: "#000",
             "text-anchor": "middle",
             "font-size": "0.5em",
-            "class": "on_top",
+            "dominant-baseline": "middle",
             id: `text_${txt}`,
-            transform: `rotate(${textRotation}, ${x * side}, ${y * ht}) translate(0, ${ht / 3.5})`,
-        },
-        `placeholder ${txt}`
+          },
+          ""
+        )
+       ]
     )
   );
 }
@@ -464,7 +483,14 @@ function save(data) {
 
 function updateText(evt){
     let id = `#text_${currImageIdx}${evt.target.dataset.idx}`;
-    document.querySelector(id).textContent = evt.target.value;
+    let value = evt.target.value.trim();
+    let target = document.querySelector(id);
+    target.textContent = value;
+    if (value){
+        target.parentElement.classList.add('has_text');
+    }else{
+        target.parentElement.classList.remove('has_text');
+    }
 }
 
 // Not currently using this, remove if not needed

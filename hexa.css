@@ -44,6 +44,14 @@ svg {
   padding: 2em;
 }
 
+.on_top polygon{
+   fill: transparent;
+}
+
+.on_top.has_text polygon{
+    fill: #FFF;
+}
+
 #options label {
   text-align: right;
 }
