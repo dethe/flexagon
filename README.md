@@ -12,7 +12,7 @@
 * [x] Add SVG shapes for background colour
 * [x] Switch text input values when switching images/faces
 * [x] Turn off autocomplete restoring values on page
-* [ ] Button to use this face's text across all faces
+* [x] Button to use this face's text across all faces
 
 ## A tool to make custom hexahexaflexagons
 
@@ -37,7 +37,7 @@ There are several steps and it requires a bit of patience and a fair dose of pre
 
 1. Now that you have the two pieces cut out (whether by Cricut or by hand), you can fold each of them in half the long way and glue to hold the halves together. Again, the more precise you are, the better the final results. Make sure the edges line up. You should end up with two strips printed on both sides, a longer one with A/B triangles at the ends, and a shorter one with a/b triangles at the ends. Allow the glue to set.
 
-2. Now we want to join the two strips into one. Glue the **A** triangle to the **a** triangle so the paper forms one long strip of 19 triangles printed on both sides with B/b triangles at the ends. DO NOT GLUE THE B/b TRIANGLES YET! Allow the glue to set
+2. Now we want to join the two strips into one. Glue the **A** triangle to the **a** triangle so the paper forms one long strip of 19 triangles printed on both sides with B/b triangles at the ends. **DO NOT GLUE THE B/b TRIANGLES YET!** Allow the glue to set
 
 3. We want the triangles pre-folded, so starting at one end, fold the first triangle back behind the strip (mountain fold). If you used a Cricut, these lines should already be scored to make this easier. Make a good crease, then unfold it and move to the next triangle, folding on the lines separating the triangles, one by one, until every line has been pre-creased. Again, precision is important.
 
@@ -62,3 +62,5 @@ There are several steps and it requires a bit of patience and a fair dose of pre
 11. There should be one triangle sticking out of the hexagon. If you flip it over, you should see the **B** and **b** triangles adjacent to each other. Fold the **B** over the **b** and glue them in place. Allow the glue to set.
 
 ### Flexing the Hexaflexagon
+
+Coming soon, but in the meantime there is this [WikiHow article](https://www.wikihow.com/Fold-a-Hexaflexagon#Flexing-Your-Hexaflexagon).

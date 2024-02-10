@@ -284,6 +284,11 @@ function triangleIndex(info) {
   return info.t.charCodeAt(1) - 96;
 }
 
+function letterIndex(num) {
+  // convert number to letter. 1 = a, 2 = b, etc.
+  return String.fromCharCode(96 + num);
+}
+
 function imageIndex(info) {
   // convert number in name to number
   return parseInt(info.t[0], 10);
@@ -484,9 +489,7 @@ function save(data) {
   reader.readAsDataURL(new Blob([data], { type: "image/svg+xml" }));
 }
 
-function updateText(evt) {
-  let id = `#text_${currImageIdx}${evt.target.dataset.idx}`;
-  let value = evt.target.value.trim();
+function updateSVGText(id, value) {
   let target = document.querySelector(id);
   target.textContent = value;
   if (value) {
@@ -494,13 +497,19 @@ function updateText(evt) {
   } else {
     target.parentElement.classList.remove("has_text");
   }
+}
+
+function updateText(evt) {
+  let id = `#text_${currImageIdx}${evt.target.dataset.idx}`;
+  let value = evt.target.value.trim();
+  updateSVGText(id, value);
   updateOptionalText(evt);
 }
 
 function updateOptionalText(evt) {
   let currImageText = optionalText[currImageIdx - 1];
   for (let i = 0; i < 6; i++) {
-    currImageText[i] = document.querySelector(`#text${i + 1}`).value;
+    currImageText[i] = document.querySelector(`#text${i + 1}`).value.trim();
   }
 }
 
@@ -508,6 +517,18 @@ function restoreOptionalText() {
   let currImageText = optionalText[currImageIdx - 1];
   for (let i = 0; i < 6; i++) {
     document.querySelector(`#text${i + 1}`).value = currImageText[i] || "";
+  }
+}
+
+function repeatText() {
+  // copy the text from this face to all the faces
+  let currentImageText = optionalText[currImageIdx - 1];
+  for (let i = 0; i < 6; i++) {
+    for (let j = 0; j < 6; j++) {
+      optionalText[i][j] = currentImageText[j];
+      let id = `#text_${i + 1}${letterIndex(j + 1)}`;
+      updateSVGText(id, currentImageText[j]);
+    }
   }
 }
 
@@ -532,6 +553,7 @@ function subscribe_events() {
   listen("#hide_text", "change", evt =>
     document.body.classList.toggle("hide_text", evt.target.checked)
   );
+  listen("#copy_text", "click", repeatText);
 }
 
 function scrollToZoom(evt) {
