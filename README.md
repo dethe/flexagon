@@ -8,9 +8,11 @@
 * [x] Test hide images feature
 * [x] Get text from inputs to optional fields around hexagon
 * [x] Position optional fields properly
-* [ ] Add CSS for background colour only on text fields that are used
-* [ ] Add SVG shapes for background colour
-* [ ] Switch text input values when switching images/faces
+* [x] Add CSS for background colour only on text fields that are used
+* [x] Add SVG shapes for background colour
+* [x] Switch text input values when switching images/faces
+* [x] Turn off autocomplete restoring values on page
+* [ ] Button to use this face's text across all faces
 
 ## A tool to make custom hexahexaflexagons
 

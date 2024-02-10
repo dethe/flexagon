@@ -38,10 +38,10 @@ const p6 = { x: side * 0.5, y: ht * 2 };
 // key: t=text, s=strip, a=angle of rotation, x,y centerpoint
 // a2= angle of rotation for optional edge text
 const text_labels = [
-  { t: "1a", s: strip1, a: 120, a2: -120,  x: 3.5, y: 0.66 },
+  { t: "1a", s: strip1, a: 120, a2: -120, x: 3.5, y: 0.66 },
   { t: "1b", s: strip1, a: 120, a2: -60, x: 2, y: 0.33 },
   { t: "1c", s: strip1, a: 0, a2: -120, x: 0.5, y: 0.66 },
-  { t: "1d", s: strip2, a: 0, a2: -60,x: 3, y: 0.33 },
+  { t: "1d", s: strip2, a: 0, a2: -60, x: 3, y: 0.33 },
   { t: "1e", s: strip2, a: -120, a2: -120, x: 1.5, y: 0.66 },
   { t: "1f", s: strip1, a: -120, a2: -60, x: 5, y: 0.33 },
   { t: "2a", s: strip1, a: 180, a2: -60, x: 4, y: 0.33 },
@@ -228,27 +228,30 @@ function text(strip, txt, x, y, rotation, textRotation, neverHide) {
       txt
     )
   );
-  if (neverHide){
-      return;
+  if (neverHide) {
+    return;
   }
   strip.appendChild(
-    svg("g",
-        {
-           transform: `rotate(${textRotation}, ${x * side}, ${y * ht}) translate(0, ${ht / 3.4})`,
-           "class": "on_top",
-        }, [
-        svg(
-          "polygon",
-          {
-            fill: "#fff",
-            points: `${_x - side_2},${_y + _h} ${_x + side_2},${_y + _h} ${_x+(side_2-inset)},${_y-_h} ${_x-(side_2-inset)},${_y-_h}`
-          }
-        ),
+    svg(
+      "g",
+      {
+        transform: `rotate(${textRotation}, ${x * side}, ${
+          y * ht
+        }) translate(0, ${ht / 3.4})`,
+        class: "on_top",
+      },
+      [
+        svg("polygon", {
+          fill: "#fff",
+          points: `${_x - side_2},${_y + _h} ${_x + side_2},${_y + _h} ${
+            _x + (side_2 - inset)
+          },${_y - _h} ${_x - (side_2 - inset)},${_y - _h}`,
+        }),
         svg(
           "text",
           {
-           x: x * side,
-           y: y * ht,
+            x: x * side,
+            y: y * ht,
             fill: "#000",
             "text-anchor": "middle",
             "font-size": "0.5em",
@@ -256,8 +259,8 @@ function text(strip, txt, x, y, rotation, textRotation, neverHide) {
             id: `text_${txt}`,
           },
           ""
-        )
-       ]
+        ),
+      ]
     )
   );
 }
@@ -444,7 +447,7 @@ function chooseImage() {
   let idx = parseInt($("input[type=radio]:checked").value, 10); // target values are 1-based
   currImageIdx = idx;
   hex.viewBox.baseVal.x = 350 * (idx - 1);
-  //~ restoreOptionalText();
+  restoreOptionalText();
 }
 
 function downloadFile() {
@@ -481,19 +484,19 @@ function save(data) {
   reader.readAsDataURL(new Blob([data], { type: "image/svg+xml" }));
 }
 
-function updateText(evt){
-    let id = `#text_${currImageIdx}${evt.target.dataset.idx}`;
-    let value = evt.target.value.trim();
-    let target = document.querySelector(id);
-    target.textContent = value;
-    if (value){
-        target.parentElement.classList.add('has_text');
-    }else{
-        target.parentElement.classList.remove('has_text');
-    }
+function updateText(evt) {
+  let id = `#text_${currImageIdx}${evt.target.dataset.idx}`;
+  let value = evt.target.value.trim();
+  let target = document.querySelector(id);
+  target.textContent = value;
+  if (value) {
+    target.parentElement.classList.add("has_text");
+  } else {
+    target.parentElement.classList.remove("has_text");
+  }
+  updateOptionalText(evt);
 }
 
-// Not currently using this, remove if not needed
 function updateOptionalText(evt) {
   let currImageText = optionalText[currImageIdx - 1];
   for (let i = 0; i < 6; i++) {
@@ -501,7 +504,6 @@ function updateOptionalText(evt) {
   }
 }
 
-// Not currently using this, remove if not needed
 function restoreOptionalText() {
   let currImageText = optionalText[currImageIdx - 1];
   for (let i = 0; i < 6; i++) {
@@ -524,8 +526,12 @@ function subscribe_events() {
   listen("#filepicker", "change", loadFile);
   listen("#download-file", "click", downloadFile);
   listen("input[type=text]", "input", updateText);
-  listen("#hide_images", "change", evt => document.body.classList.toggle('hide_images', evt.target.checked));
-  listen("#hide_text", "change", evt => document.body.classList.toggle('hide_text', evt.target.checked));
+  listen("#hide_images", "change", evt =>
+    document.body.classList.toggle("hide_images", evt.target.checked)
+  );
+  listen("#hide_text", "change", evt =>
+    document.body.classList.toggle("hide_text", evt.target.checked)
+  );
 }
 
 function scrollToZoom(evt) {
@@ -598,7 +604,7 @@ function useHex(info) {
       href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
       x: side * (stripX(info) - hexX(info)),
       y: ht * (stripY(info) - hexY(info)),
-      "class": "triangle_image",
+      class: "triangle_image",
       transform: rot(info),
     })
   );
@@ -607,7 +613,9 @@ function useHex(info) {
 function hex_to_strip() {
   text_labels.forEach(useHex);
   // put optional text back on top
-  document.querySelectorAll(".on_top").forEach(e => e.parentElement.appendChild(e));
+  document
+    .querySelectorAll(".on_top")
+    .forEach(e => e.parentElement.appendChild(e));
 }
 
 function gluingHints() {
