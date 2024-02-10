@@ -1,5 +1,19 @@
 # Flexagon
 
+## TODO and where I've left off
+
+* [x] Add CSS for hide text feature
+* [x] Text hide text feature
+* [x] Add CSS for hide images feature
+* [x] Test hide images feature
+* [x] Get text from inputs to optional fields around hexagon
+* [x] Position optional fields properly
+* [x] Add CSS for background colour only on text fields that are used
+* [x] Add SVG shapes for background colour
+* [x] Switch text input values when switching images/faces
+* [x] Turn off autocomplete restoring values on page
+* [x] Button to use this face's text across all faces
+
 ## A tool to make custom hexahexaflexagons
 
 A hexahexaflexagon is a paper toy with six edges (the first hexa-) and six sides (the second hexa-). It appears to be a 2-sided hexagon, but by flexing it (that's the flexa- part) you can reveal the remaining sides. This is a tool to put your own images on the six sides.
@@ -13,15 +27,7 @@ There are several steps and it requires a bit of patience and a fair dose of pre
 3. Within the hexagon at the top of the tool drag to pan and use the mouse wheel to zoom the image
 4. Use the radio buttons to change images and repeat until all 6 images are in position
 
-### Cut out the Hexahexaflexagon (Cricut Method)
-
-1. If you have access to a Cricut cutter, use the Save [Coming soon!] button to save the SVG of your work
-2. Import that into Cricut Design Space
-3. In Design Space mark the blue lines for cutting and the grey lines for scoring
-4. Use heavy paper, thin cardstock, or photo paper
-5. If you have a colour printer attached, the Cricut will prompt you to print, then feed the result into the printer. If you do not have an attached printer, you can output a PDF file with alignment marks that can be printed and then fed into the Cricut.
-
-### Cut out the Hexahexaflexagon (cut by hand)
+### Print and cut out the Hexahexaflexagon
 
 1. Use heavy paper, thin cardstock, or photo paper
 2. You can print from the web page without saving the SVG first
@@ -31,7 +37,7 @@ There are several steps and it requires a bit of patience and a fair dose of pre
 
 1. Now that you have the two pieces cut out (whether by Cricut or by hand), you can fold each of them in half the long way and glue to hold the halves together. Again, the more precise you are, the better the final results. Make sure the edges line up. You should end up with two strips printed on both sides, a longer one with A/B triangles at the ends, and a shorter one with a/b triangles at the ends. Allow the glue to set.
 
-2. Now we want to join the two strips into one. Glue the **A** triangle to the **a** triangle so the paper forms one long strip of 19 triangles printed on both sides with B/b triangles at the ends. DO NOT GLUE THE B/b TRIANGLES YET! Allow the glue to set
+2. Now we want to join the two strips into one. Glue the **A** triangle to the **a** triangle so the paper forms one long strip of 19 triangles printed on both sides with B/b triangles at the ends. **DO NOT GLUE THE B/b TRIANGLES YET!** Allow the glue to set
 
 3. We want the triangles pre-folded, so starting at one end, fold the first triangle back behind the strip (mountain fold). If you used a Cricut, these lines should already be scored to make this easier. Make a good crease, then unfold it and move to the next triangle, folding on the lines separating the triangles, one by one, until every line has been pre-creased. Again, precision is important.
 
@@ -56,3 +62,5 @@ There are several steps and it requires a bit of patience and a fair dose of pre
 11. There should be one triangle sticking out of the hexagon. If you flip it over, you should see the **B** and **b** triangles adjacent to each other. Fold the **B** over the **b** and glue them in place. Allow the glue to set.
 
 ### Flexing the Hexaflexagon
+
+Coming soon, but in the meantime there is this [WikiHow article](https://www.wikihow.com/Fold-a-Hexaflexagon#Flexing-Your-Hexaflexagon).

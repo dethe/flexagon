@@ -2,6 +2,8 @@ import { html, svg, $, $$, listen, setAttributes } from "./dom.js";
 
 const side = 172; // 10 triangles across 1250 pixels
 const ht = 149; // height of triangle, 108.2531...
+const side_2 = Math.round(side / 2);
+const ht_2 = Math.round(ht / 2);
 
 const strip1 = $("#strip1");
 const strip2 = $("#strip2");
@@ -17,6 +19,7 @@ const video = $("#video");
 const canvas = $("#canvas");
 const ctx = canvas.getContext("2d");
 let cameraInitialized = false;
+let optionalText = [[], [], [], [], [], []];
 
 const n4 = [1, 2, 3, 4];
 const n5 = [1, 2, 3, 4, 5];
@@ -33,43 +36,44 @@ const p6 = { x: side * 0.5, y: ht * 2 };
 
 // text and rotations for strips
 // key: t=text, s=strip, a=angle of rotation, x,y centerpoint
+// a2= angle of rotation for optional edge text
 const text_labels = [
-  { t: "1a", s: strip1, a: 120, x: 3.5, y: 0.66 },
-  { t: "1b", s: strip1, a: 120, x: 2, y: 0.33 },
-  { t: "1c", s: strip1, a: 0, x: 0.5, y: 0.66 },
-  { t: "1d", s: strip2, a: 0, x: 3, y: 0.33 },
-  { t: "1e", s: strip2, a: -120, x: 1.5, y: 0.66 },
-  { t: "1f", s: strip1, a: -120, x: 5, y: 0.33 },
-  { t: "2a", s: strip1, a: 180, x: 4, y: 0.33 },
-  { t: "2b", s: strip1, a: 60, x: 2.5, y: 0.66 },
-  { t: "2c", s: strip1, a: 60, x: 1, y: 0.33 },
-  { t: "2d", s: strip2, a: -60, x: 3.5, y: 0.66 },
-  { t: "2e", s: strip2, a: -60, x: 2, y: 0.33 },
-  { t: "2f", s: strip2, a: 180, x: 0.5, y: 0.66 },
-  { t: "3a", s: strip1, a: 120, x: 4.5, y: 0.66 },
-  { t: "3b", s: strip1, a: 120, x: 3, y: 0.33 },
-  { t: "3c", s: strip1, a: 0, x: 1.5, y: 0.66 },
-  { t: "3d", s: strip2, a: 0, x: 4, y: 0.33 },
-  { t: "3e", s: strip2, a: -120, x: 2.5, y: 0.66 },
-  { t: "3f", s: strip2, a: -120, x: 1, y: 0.33 },
-  { t: "4a", s: strip1, a: 180, x: 1.5, y: 1.33 },
-  { t: "4b", s: strip1, a: 180, x: 1, y: 1.66 },
-  { t: "4c", s: strip2, a: 60, x: 2.5, y: 1.33 },
-  { t: "4d", s: strip2, a: 60, x: 2, y: 1.66 },
-  { t: "4e", s: strip1, a: -60, x: 4.5, y: 1.33 },
-  { t: "4f", s: strip1, a: -60, x: 4, y: 1.66 },
-  { t: "5a", s: strip1, a: 180, x: 2.5, y: 1.33 },
-  { t: "5b", s: strip1, a: 180, x: 2, y: 1.66 },
-  { t: "5c", s: strip2, a: 60, x: 3.5, y: 1.33 },
-  { t: "5d", s: strip2, a: 60, x: 3, y: 1.66 },
-  { t: "5e", s: strip1, a: -60, x: 5.5, y: 1.33 },
-  { t: "5f", s: strip1, a: -60, x: 5, y: 1.66 },
-  { t: "6a", s: strip1, a: 180, x: 3.5, y: 1.33 },
-  { t: "6b", s: strip1, a: 180, x: 3, y: 1.66 },
-  { t: "6c", s: strip2, a: 60, x: 4.5, y: 1.33 },
-  { t: "6d", s: strip2, a: 60, x: 4, y: 1.66 },
-  { t: "6e", s: strip2, a: -60, x: 1.5, y: 1.33 },
-  { t: "6f", s: strip2, a: -60, x: 1, y: 1.66 },
+  { t: "1a", s: strip1, a: 120, a2: -120, x: 3.5, y: 0.66 },
+  { t: "1b", s: strip1, a: 120, a2: -60, x: 2, y: 0.33 },
+  { t: "1c", s: strip1, a: 0, a2: -120, x: 0.5, y: 0.66 },
+  { t: "1d", s: strip2, a: 0, a2: -60, x: 3, y: 0.33 },
+  { t: "1e", s: strip2, a: -120, a2: -120, x: 1.5, y: 0.66 },
+  { t: "1f", s: strip1, a: -120, a2: -60, x: 5, y: 0.33 },
+  { t: "2a", s: strip1, a: 180, a2: -60, x: 4, y: 0.33 },
+  { t: "2b", s: strip1, a: 60, a2: -120, x: 2.5, y: 0.66 },
+  { t: "2c", s: strip1, a: 60, a2: -60, x: 1, y: 0.33 },
+  { t: "2d", s: strip2, a: -60, a2: -120, x: 3.5, y: 0.66 },
+  { t: "2e", s: strip2, a: -60, a2: -60, x: 2, y: 0.33 },
+  { t: "2f", s: strip2, a: 180, a2: 120, x: 0.5, y: 0.66 },
+  { t: "3a", s: strip1, a: 120, a2: -120, x: 4.5, y: 0.66 },
+  { t: "3b", s: strip1, a: 120, a2: -60, x: 3, y: 0.33 },
+  { t: "3c", s: strip1, a: 0, a2: -120, x: 1.5, y: 0.66 },
+  { t: "3d", s: strip2, a: 0, a2: -60, x: 4, y: 0.33 },
+  { t: "3e", s: strip2, a: -120, a2: -120, x: 2.5, y: 0.66 },
+  { t: "3f", s: strip2, a: -120, a2: -60, x: 1, y: 0.33 },
+  { t: "4a", s: strip1, a: 180, a2: -60, x: 1.5, y: 1.33 },
+  { t: "4b", s: strip1, a: 180, a2: 0, x: 1, y: 1.66 },
+  { t: "4c", s: strip2, a: 60, a2: -60, x: 2.5, y: 1.33 },
+  { t: "4d", s: strip2, a: 60, a2: 0, x: 2, y: 1.66 },
+  { t: "4e", s: strip1, a: -60, a2: -60, x: 4.5, y: 1.33 },
+  { t: "4f", s: strip1, a: -60, a2: 0, x: 4, y: 1.66 },
+  { t: "5a", s: strip1, a: 180, a2: -60, x: 2.5, y: 1.33 },
+  { t: "5b", s: strip1, a: 180, a2: 0, x: 2, y: 1.66 },
+  { t: "5c", s: strip2, a: 60, a2: -60, x: 3.5, y: 1.33 },
+  { t: "5d", s: strip2, a: 60, a2: 0, x: 3, y: 1.66 },
+  { t: "5e", s: strip1, a: -60, a2: -60, x: 5.5, y: 1.33 },
+  { t: "5f", s: strip1, a: -60, a2: 0, x: 5, y: 1.66 },
+  { t: "6a", s: strip1, a: 180, a2: -60, x: 3.5, y: 1.33 },
+  { t: "6b", s: strip1, a: 180, a2: 0, x: 3, y: 1.66 },
+  { t: "6c", s: strip2, a: 60, a2: -60, x: 4.5, y: 1.33 },
+  { t: "6d", s: strip2, a: 60, a2: 0, x: 4, y: 1.66 },
+  { t: "6e", s: strip2, a: -60, a2: -60, x: 1.5, y: 1.33 },
+  { t: "6f", s: strip2, a: -60, a2: 0, x: 1, y: 1.66 },
 ];
 
 function defaultImage(idx) {
@@ -200,23 +204,63 @@ function path(strip, moves, clr) {
 //   );
 // }
 
-const textObj = o => text(o.s, o.t, o.x, o.y, o.a);
+const textObj = o => text(o.s, o.t, o.x, o.y, o.a, o.a2);
 
-function text(strip, txt, x, y, rotation) {
+function text(strip, txt, x, y, rotation, textRotation, neverHide) {
+  let _x = x * side;
+  let _y = y * ht;
+  let inset = 8;
+  let _h = 6;
   strip.appendChild(
     svg(
       "text",
       {
-        x: x * side,
-        y: y * ht,
+        x: _x,
+        y: _y,
         fill: "#CCC",
         "text-anchor": "middle",
         "dominant-baseline": "middle",
         "font-size": "2em",
         "font-family": "sans-serif",
-        transform: `rotate(${rotation}, ${x * side}, ${y * ht})`,
+        class: neverHide ? "never_hide" : "",
+        transform: `rotate(${rotation}, ${_x}, ${_y})`,
       },
       txt
+    )
+  );
+  if (neverHide) {
+    return;
+  }
+  strip.appendChild(
+    svg(
+      "g",
+      {
+        transform: `rotate(${textRotation}, ${x * side}, ${
+          y * ht
+        }) translate(0, ${ht / 3.4})`,
+        class: "on_top",
+      },
+      [
+        svg("polygon", {
+          fill: "#fff",
+          points: `${_x - side_2},${_y + _h} ${_x + side_2},${_y + _h} ${
+            _x + (side_2 - inset)
+          },${_y - _h} ${_x - (side_2 - inset)},${_y - _h}`,
+        }),
+        svg(
+          "text",
+          {
+            x: x * side,
+            y: y * ht,
+            fill: "#000",
+            "text-anchor": "middle",
+            "font-size": "0.5em",
+            "dominant-baseline": "middle",
+            id: `text_${txt}`,
+          },
+          ""
+        ),
+      ]
     )
   );
 }
@@ -238,6 +282,11 @@ function triClip(num, p1, p2, p3) {
 function triangleIndex(info) {
   // convert letter in name to number. a = 1, b = 2, etc.
   return info.t.charCodeAt(1) - 96;
+}
+
+function letterIndex(num) {
+  // convert number to letter. 1 = a, 2 = b, etc.
+  return String.fromCharCode(96 + num);
 }
 
 function imageIndex(info) {
@@ -403,6 +452,7 @@ function chooseImage() {
   let idx = parseInt($("input[type=radio]:checked").value, 10); // target values are 1-based
   currImageIdx = idx;
   hex.viewBox.baseVal.x = 350 * (idx - 1);
+  restoreOptionalText();
 }
 
 function downloadFile() {
@@ -439,6 +489,49 @@ function save(data) {
   reader.readAsDataURL(new Blob([data], { type: "image/svg+xml" }));
 }
 
+function updateSVGText(id, value) {
+  let target = document.querySelector(id);
+  target.textContent = value;
+  if (value) {
+    target.parentElement.classList.add("has_text");
+  } else {
+    target.parentElement.classList.remove("has_text");
+  }
+}
+
+function updateText(evt) {
+  let id = `#text_${currImageIdx}${evt.target.dataset.idx}`;
+  let value = evt.target.value.trim();
+  updateSVGText(id, value);
+  updateOptionalText(evt);
+}
+
+function updateOptionalText(evt) {
+  let currImageText = optionalText[currImageIdx - 1];
+  for (let i = 0; i < 6; i++) {
+    currImageText[i] = document.querySelector(`#text${i + 1}`).value.trim();
+  }
+}
+
+function restoreOptionalText() {
+  let currImageText = optionalText[currImageIdx - 1];
+  for (let i = 0; i < 6; i++) {
+    document.querySelector(`#text${i + 1}`).value = currImageText[i] || "";
+  }
+}
+
+function repeatText() {
+  // copy the text from this face to all the faces
+  let currentImageText = optionalText[currImageIdx - 1];
+  for (let i = 0; i < 6; i++) {
+    for (let j = 0; j < 6; j++) {
+      optionalText[i][j] = currentImageText[j];
+      let id = `#text_${i + 1}${letterIndex(j + 1)}`;
+      updateSVGText(id, currentImageText[j]);
+    }
+  }
+}
+
 function subscribe_events() {
   listen("input[type=radio]", "input", chooseImage);
   $("#hex").addEventListener("wheel", scrollToZoom, { passive: false });
@@ -453,6 +546,14 @@ function subscribe_events() {
   listen("#take-photo", "click", takePhoto);
   listen("#filepicker", "change", loadFile);
   listen("#download-file", "click", downloadFile);
+  listen("input[type=text]", "input", updateText);
+  listen("#hide_images", "change", evt =>
+    document.body.classList.toggle("hide_images", evt.target.checked)
+  );
+  listen("#hide_text", "change", evt =>
+    document.body.classList.toggle("hide_text", evt.target.checked)
+  );
+  listen("#copy_text", "click", repeatText);
 }
 
 function scrollToZoom(evt) {
@@ -525,6 +626,7 @@ function useHex(info) {
       href: `#hextri${imageIndex(info)}_${triangleIndex(info)}`,
       x: side * (stripX(info) - hexX(info)),
       y: ht * (stripY(info) - hexY(info)),
+      class: "triangle_image",
       transform: rot(info),
     })
   );
@@ -532,14 +634,19 @@ function useHex(info) {
 
 function hex_to_strip() {
   text_labels.forEach(useHex);
+  // put optional text back on top
+  document
+    .querySelectorAll(".on_top")
+    .forEach(e => e.parentElement.appendChild(e));
 }
 
 function gluingHints() {
   // Show which triangles get glued together at the end
-  textObj({ t: "B", s: strip1, a: 0, x: 0.5, y: 1.33 });
-  textObj({ t: "A", s: strip1, a: 0, x: 5.5, y: 0.66 });
-  textObj({ t: "a", s: strip2, a: 0, x: 0.5, y: 1.33 });
-  textObj({ t: "b", s: strip2, a: 0, x: 4.5, y: 0.66 });
+  // last param says not to hide these even when text is hidden
+  text(strip1, "A", 5.5, 0.66, 0, 0, true);
+  text(strip1, "B", 0.5, 1.33, 0, 0, true);
+  text(strip2, "a", 0.5, 1.33, 0, 0, true);
+  text(strip2, "b", 4.5, 0.66, 0, 0, true);
 }
 
 addText();

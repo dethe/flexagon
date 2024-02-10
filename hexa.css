@@ -5,6 +5,22 @@ body {
   padding: 0;
 }
 
+body.hide_images .triangle_image{
+  display: none;
+}
+
+body.hide_text text{
+  display: none;
+}
+
+body.hide_text text.never_hide{
+  display: inline;
+}
+
+#intro {
+  padding: 2em;
+}
+
 svg {
   margin-bottom: 2em;
 }
@@ -25,6 +41,23 @@ svg {
 #controls form {
   display: flex;
   flex-direction: column;
+  padding: 2em;
+}
+
+.on_top polygon{
+   fill: transparent;
+}
+
+.on_top.has_text polygon{
+    fill: #FFF;
+}
+
+#options label {
+  text-align: right;
+}
+
+#options input {
+  width: 70%;
 }
 
 #controls form > * {

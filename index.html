@@ -12,38 +12,48 @@
     <script src="js/hexa.js" type="module" async defer></script>
   </head>
   <body>
-  <video style="display:none" id="video" width="640" height="480" autoplay></video>
-  <canvas style="display:none" id="canvas" width="640" height="480"></canvas>
+    <video
+      style="display: none"
+      id="video"
+      width="640"
+      height="480"
+      autoplay
+    ></video>
+    <canvas style="display: none" id="canvas" width="640" height="480"></canvas>
+    <section class="noprint" id="intro">
+      <h1>Hexahexaflexagon Tool</h1>
+      <p>
+        Welcome to the hexahexflexagon tool! If you print this (and cut, fold,
+        and glue according to the
+        <a href="https://hackmd.io/eawNw6gyTCibG64dc3SC8w?view">instructions</a
+        >), you will get a kind of paper kaleidoscope, but that's just the
+        beginning! You can add your own custom images and use the controls to
+        position them in the hexagon, and make your very own hexahexaflexagon.
+      </p>
+
+      <p>
+        Simply choose the hex, and drag a picture to it (or use the buttons to
+        pick a new picture or use the camera). You can scale with the mouse
+        wheel and drag to position.
+      </p>
+
+      <p hidden>
+        You can also save the result to have an SVG file suitable for use with
+        Cricut-style cutting machines.
+      </p>
+    </section>
     <section class="noprint" id="controls">
       <div>
-        <h1>Hexahexaflexagon Tool</h1>
-        <p>
-          Welcome to the hexahexflexagon tool! If you print this (and cut, fold,
-          and glue according to the <a href="https://hackmd.io/eawNw6gyTCibG64dc3SC8w?view">instructions</a>), you will get a kind of paper
-          kaleidoscope, but that's just the beginning! You can add your own
-          custom images and use the controls to position them in the hexagon,
-          and make your very own hexahexaflexagon.
-        </p>
-
-        <p>
-          Simply choose the hex, and drag a picture to it (or use the buttons to
-          pick a new picture or use the camera). You can scale with the mouse
-          wheel and drag to position.
-        </p>
-
-        <p hidden>
-          You can also save the result to have an SVG file suitable for use with
-          Cricut-style cutting machines.
-        </p>
+        <svg
+          id="hex"
+          width="350"
+          height="300"
+          viewBox="0 0 350 300"
+          draggable="true"
+        ></svg>
       </div>
-      <svg
-        id="hex"
-        width="350"
-        height="300"
-        viewBox="0 0 350 300"
-        draggable="true"
-      ></svg>
       <form>
+        <h3>Choose (or take photos) 6 images</h3>
         <label
           ><input type="radio" name="image" value="1" checked /> Image
           One</label
@@ -54,13 +64,55 @@
         <label><input type="radio" name="image" value="5" /> Image Five</label>
         <label><input type="radio" name="image" value="6" /> Image Six</label>
         <hr />
-        <label><input type="file" name="filepicker" id="filepicker" /> Load an image</label>
-        <label><button id="take-photo" type="button">Take a Photo</button><br />
+        <label
+          ><input type="file" name="filepicker" id="filepicker" /> Load an
+          image</label
+        >
+        <button id="take-photo" type="button">Take a Photo</button><br />
         <button id="download-file" type="button" hidden>Download File</button>
+      </form>
+      <form id="options">
+        <h3>Optional text around the edges</h3>
+        <label>Top Edge <input type="text" id="text1" data-idx="a" autocomplete="off" /></label>
+        <label>Upper Right <input type="text" id="text2" data-idx="b" autocomplete="off" /></label>
+        <label>Lower Right <input type="text" id="text3" data-idx="c" autocomplete="off" /></label>
+        <label>Bottom Edge <input type="text" id="text4" data-idx="d" autocomplete="off" /></label>
+        <label>Lower Left <input type="text" id="text5" data-idx="e" autocomplete="off" /></label>
+        <label>Upper Left <input type="text" id="text6" data-idx="f" autocomplete="off" /></label>
+        <button id="copy_text" type="button">Copy this text to all sides</button>
+        <hr>
+        <h3>Advanced Options</h3>
+        <label>Hide Images <input type="checkbox" id="hide_images" /></label>
+        <label>Hide Text <input type="checkbox" id="hide_text" /></label>
       </form>
     </section>
     <svg id="strip1" viewBox="-1 -1 1034 300"></svg>
     <svg id="strip2" viewBox="-1 -1 1034 300"></svg>
-    <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Flexagon</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://dethe.github.io/flexagon/" property="cc:attributionName" rel="cc:attributionURL">Dethe Elza</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.<br />Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/dethe/flexagon" rel="dct:source">https://github.com/dethe/flexagon</a>.
+    <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"
+      ><img
+        alt="Creative Commons License"
+        style="border-width: 0"
+        src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a
+    ><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"
+      >Flexagon</span
+    >
+    by
+    <a
+      xmlns:cc="http://creativecommons.org/ns#"
+      href="https://dethe.github.io/flexagon/"
+      property="cc:attributionName"
+      rel="cc:attributionURL"
+      >Dethe Elza</a
+    >
+    is licensed under a
+    <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"
+      >Creative Commons Attribution-ShareAlike 4.0 International License</a
+    >.<br />Based on a work at
+    <a
+      xmlns:dct="http://purl.org/dc/terms/"
+      href="https://github.com/dethe/flexagon"
+      rel="dct:source"
+      >https://github.com/dethe/flexagon</a
+    >.
   </body>
 </html>
