@@ -53,6 +53,6 @@ This requires a bit of patience and a fair dose of precision for the best result
 
 11. There should be one triangle sticking out of the hexagon. If you flip it over, you should see the **B** and **b** triangles adjacent to each other. Fold the **B** over the **b** and glue them in place. Allow the glue to set.
 
-### Flexing your Hexaflexagon
+### Flex your Hexaflexagon
 
 Coming soon, but in the meantime there is this [WikiHow article](https://www.wikihow.com/Fold-a-Hexaflexagon#Flexing-Your-Hexaflexagon).
