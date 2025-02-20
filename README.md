@@ -56,3 +56,5 @@ This requires a bit of patience and a fair dose of precision for the best result
 ### Flex your Hexahexaflexagon
 
 Coming soon, but in the meantime there is this [WikiHow article](https://www.wikihow.com/Fold-a-Hexaflexagon#Flexing-Your-Hexaflexagon).
+
+This tool and it's accompanying text, images, and videos are all created by <a href="https://livingcode.org/about/">Dethe Elza</a> (dethe at livingcode dot org). Working on adding an open source license (probably GPL3.0) for the code and Creative Commons for the text, images, and videos).
